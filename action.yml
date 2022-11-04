@@ -1,0 +1,17 @@
+name: "CodSpeed: Run"
+description: "Upload Avalanche performance data"
+author: "Arthur Pastel"
+inputs:
+  token:
+    description: "CodSpeed upload token"
+    required: true
+  run:
+    description: "The command to run the benchmarks"
+    required: true
+  upload_url:
+    description: "The upload endpoint (for on-premise deployments)"
+    default: "https://api.codspeed.io/upload"
+    required: true
+runs:
+  using: "node16"
+  main: "dist/index.js"
