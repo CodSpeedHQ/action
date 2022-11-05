@@ -8,6 +8,7 @@ import * as Path from "path";
 const getArch = async (): Promise<string> => {
   let arch = "";
   const archResult = await exec("uname", ["-m"], {
+    silent: true,
     listeners: {
       stdout: (data: Buffer) => {
         arch += data.toString();
@@ -26,6 +27,19 @@ const getTempFile = (): string =>
     `profile.${randomBytes(6).readUIntLE(0, 6).toString(36)}.out`
   );
 
+const outputListener = (line: string): void => {
+  if (
+    ![
+      "Using source line as position.",
+      "warning: L3 cache found, using its data for the LL simulation.",
+      "warning: specified LL cache:",
+      "warning: simulated LL cache:",
+    ].some(pattern => line.includes(pattern))
+  ) {
+    core.info(line);
+  }
+};
+
 const run = async (inputs: ActionInputs): Promise<{profilePath: string}> =>
   core.group("Run benchmarks", async () => {
     const arch = await getArch();
@@ -33,6 +47,7 @@ const run = async (inputs: ActionInputs): Promise<{profilePath: string}> =>
     const valgrindOptions = [
       "-q",
       "--tool=callgrind",
+      "--cache-sim=yes",
       "--I1=32768,8,64",
       "--D1=32768,8,64",
       "--LL=8388608,16,64",
@@ -60,6 +75,11 @@ const run = async (inputs: ActionInputs): Promise<{profilePath: string}> =>
             PYTHONHASHSEED: "0",
             ARCH: arch,
             CODSPEED_ENV: "github",
+          },
+          silent: true,
+          listeners: {
+            stdline: outputListener,
+            errline: outputListener,
           },
         }
       );
