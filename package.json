@@ -1,6 +1,6 @@
 {
   "name": "@codspeed/action",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": " Github Actions for running CodSpeed in the CI",
   "main": "lib/main.js",
