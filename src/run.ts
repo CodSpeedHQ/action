@@ -59,6 +59,7 @@ const run = async (inputs: ActionInputs): Promise<{profilePath: string}> =>
             PYTHONMALLOC: "malloc",
             PYTHONHASHSEED: "0",
             ARCH: arch,
+            CODSPEED_ENV: "github",
           },
         }
       );
