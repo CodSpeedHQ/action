@@ -42,5 +42,5 @@ jobs:
       - uses: CodSpeedHQ/action-@v1
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
-          run: pytest tests/ --benchmark
+          run: pytest tests/ # the action will make sure to run only the benchmarks
 ```

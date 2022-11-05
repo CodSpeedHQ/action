@@ -5,6 +5,9 @@ const prepare = async (): Promise<void> =>
   core.group("Prepare environment", async () => {
     try {
       await exec("sudo apt-get install -y valgrind");
+      await exec("pip uninstall pytest-benchmark -y", [], {
+        silent: true,
+      });
       try {
         await exec("pip show pytest-codspeed", [], {
           silent: true,
