@@ -7,21 +7,27 @@ Github Actions for running CodSpeed in the CI.
 ```yaml
 - uses: CodSpeedHQ/action@v1
   with:
-    # [REQUIRED] the CodSpeed upload token: can be found at https://codspeed.com/settings
-    # You can then use the token as a secret in your repository
-    token: ${{ secrets.CODSPEED_TOKEN }}
+    # [REQUIRED]
+    # The CodSpeed upload token: can be found at https://codspeed.com/settings
+    # It's strongly recommended to use a secret for this value
+    token: ""
 
-    # [REQUIRED] The command used to run your codspeed benchmarks
-    # Here with pytest:
-    run: pytest tests/ --benchmark
+    # [REQUIRED]
+    # The command used to run your codspeed benchmarks
+    run: ""
 
-    # [OPTIONAL]: A custom upload url, if you are using a self-hosted CodSpeed instance
+    # [OPTIONAL]
+    # A custom upload url, only if you are using an on premise CodSpeed instance
     upload_url: ""
 ```
 
-# Example workflows running CodSpeed
+# Example usage
 
-## With pytest
+## With `pytest` and [`pytest-codspeed`](https://github.com/CodSpeedHQ/pytest-codspeed)
+
+This worklow will run the benchmarks found in the `tests/` folder and upload the results to CodSpeed.
+
+It will be triggered on every push to the `main` branch and on every pull request.
 
 ```yaml
 name: benchmarks
@@ -29,7 +35,7 @@ name: benchmarks
 on:
   push:
     branches:
-      - "master"
+      - "main" # or "master"
   pull_request:
 
 jobs:
@@ -38,9 +44,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
-      - run: pip install -r requirements.txt
-      - uses: CodSpeedHQ/action-@v1
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v1
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
-          run: pytest tests/ # the action will make sure to run only the benchmarks
+          run: pytest tests/ --codspeed
 ```
