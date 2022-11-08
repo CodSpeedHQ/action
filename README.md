@@ -30,13 +30,16 @@ This worklow will run the benchmarks found in the `tests/` folder and upload the
 It will be triggered on every push to the `main` branch and on every pull request.
 
 ```yaml
-name: benchmarks
+name: codspeed-benchmarks
 
 on:
   push:
     branches:
       - "main" # or "master"
   pull_request:
+  # `workflow_dispatch` allows CodSpeed to trigger backtest
+  # performance analysis in order to generate initial data.
+  workflow_dispatch:
 
 jobs:
   benchmarks:
