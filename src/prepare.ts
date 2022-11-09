@@ -7,9 +7,6 @@ const prepare = async (): Promise<void> =>
       await exec("sudo apt-get install -y valgrind", [], {
         silent: true,
       });
-      await exec("pip uninstall pytest-benchmark -y", [], {
-        silent: true,
-      });
       try {
         await exec("pip show pytest-codspeed", [], {
           silent: true,
