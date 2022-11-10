@@ -57,8 +57,8 @@ const upload = async (
 ): Promise<void> => {
   core.group("Upload Results", async () => {
     const uploadMetadata = getUploadMetadata();
-    core.info("Upload metadata:");
-    core.info(JSON.stringify(uploadMetadata, null, 2));
+    core.debug("Upload metadata:");
+    core.debug(JSON.stringify(uploadMetadata, null, 2));
 
     core.info("Preparing upload");
     let response: TypedResponse<PostResponse>;
