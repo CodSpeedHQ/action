@@ -1,6 +1,6 @@
 # CodSpeed Action
 
-Github Actions for running CodSpeed in the CI.
+Github Actions for running CodSpeed in your CI.
 
 # Usage
 
