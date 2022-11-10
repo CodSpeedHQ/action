@@ -22,7 +22,7 @@ MAJOR_VERSION=$(echo $NEW_VERSION | cut -d. -f1)
 git add package.json dist/index.js
 # Fail if there are any unstaged changes left
 git diff --exit-code
-git commit -am "Release v$NEW_VERSION 🚀"
+git commit -m "Release v$NEW_VERSION 🚀"
 git tag -fa v$NEW_VERSION -m "Release v$NEW_VERSION 🚀"
 git tag -fa v$MAJOR_VERSION -m "Release v$NEW_VERSION 🚀"
 git push origin v$NEW_VERSION
