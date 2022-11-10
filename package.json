@@ -12,10 +12,7 @@
     "format-check": "prettier --check '**/*.ts'",
     "lint": "eslint src/**/*.ts",
     "test": "jest",
-    "release:prechecks": "pnpm format-check && pnpm lint && pnpm build && git diff --exit-code",
-    "release:bump": "pnpm version patch --git-tag-version=false && pnpm build",
-    "release:tags": "git tag -fa v$npm_package_version -m \"v$npm_package_version\" && git tag -fa v1 -m \"Update major\"  && git push -f origin v1 && git push origin v$npm_package_version",
-    "release:github": "gh release create v$npm_package_version -d --title \"v$npm_package_version\" --notes \"Release v$npm_package_version\""
+    "release": "./scripts/release.sh"
   },
   "repository": {
     "type": "git",
