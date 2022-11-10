@@ -1,6 +1,12 @@
-# CodSpeed Action
+<div align="center">
+<h1>CodSpeed Action</h1>
+
+[![CI](https://github.com/CodSpeedHQ/action/actions/workflows/ci.yml/badge.svg)](https://github.com/CodSpeedHQ/action/actions/workflows/ci.yml)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/CodSpeedHQ/action)](https://github.com/CodSpeedHQ/action/releases)
 
 Github Actions for running CodSpeed in your CI.
+
+</div>
 
 # Usage
 
