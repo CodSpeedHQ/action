@@ -8,8 +8,8 @@ import {TypedResponse} from "@actions/http-client/lib/interfaces";
 
 const getUploadMetadata = (): UploadMetadata => ({
   ref: context.ref,
-  headRef: context.payload?.pull_request?.head?.ref ?? "",
-  baseRef: context.payload?.pull_request?.base?.ref ?? "",
+  headRef: context.payload?.pull_request?.head?.ref,
+  baseRef: context.payload?.pull_request?.base?.ref,
   owner: context.repo.owner,
   repository: context.repo.repo,
   event: context.eventName,
