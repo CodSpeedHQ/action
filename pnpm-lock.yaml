@@ -14,6 +14,7 @@ specifiers:
   eslint-plugin-jest: ^25.3.2
   jest: ^27.2.5
   js-yaml: ^4.1.0
+  md5-file: ^5.0.0
   prettier: 2.5.1
   ts-jest: ^27.1.2
   typescript: ^4.4.4
@@ -23,6 +24,7 @@ dependencies:
   '@actions/exec': 1.1.1
   '@actions/github': 5.1.1
   '@actions/http-client': 2.0.1
+  md5-file: 5.0.0
 
 devDependencies:
   '@types/node': 18.11.9
@@ -4009,6 +4011,12 @@ packages:
     dependencies:
       tmpl: 1.0.5
     dev: true
+
+  /md5-file/5.0.0:
+    resolution: {integrity: sha512-xbEFXCYVWrSx/gEKS1VPlg84h/4L20znVIulKw6kMfmBUAZNAnF00eczz9ICMl+/hjQGo5KSXRxbL/47X3rmMw==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: false
 
   /merge-stream/2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
