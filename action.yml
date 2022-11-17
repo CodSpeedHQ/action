@@ -4,7 +4,7 @@ author: "Arthur Pastel"
 inputs:
   token:
     description: "CodSpeed upload token"
-    required: true
+    required: false
   run:
     description: "The command to run the benchmarks"
     required: true
