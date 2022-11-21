@@ -34,36 +34,6 @@ const getUploadMetadata = async ({
   };
 };
 
-const createMultipartBody = (
-  filePath: string
-): {
-  multipartBody: Buffer;
-  boundary: string;
-} => {
-  const data = fs.readFileSync(filePath);
-  // https://github.com/coolaj86/node-examples-js/blob/master/http-and-html5/http-upload.js
-  const crlf = "\r\n";
-  const boundary = "---------------------------10102754414578508781458777923"; // Boundary: "--" + up to 70 ASCII chars + "\r\n"
-  const delimiter = `${crlf}--${boundary}`;
-  const preamble = ""; // ignored. a good place for non-standard mime info
-  const epilogue = ""; // ignored. a good place to place a checksum, etc
-  const headers = [
-    `Content-Disposition: form-data; name="profile"; filename="profile"${crlf}`,
-    `Content-Type: application/octet-stream${crlf}`,
-  ];
-  //bodyPart = headers.join('') + crlf + data.toString(),
-  //encapsulation = delimiter + crlf + bodyPart,
-  const closeDelimiter = `${delimiter}--`;
-
-  //multipartBody = preamble + encapsulation + closeDelimiter + epilogue + crlf /* node doesn't add this */;
-  const multipartBody = Buffer.concat([
-    Buffer.from(preamble + delimiter + crlf + headers.join("") + crlf),
-    data,
-    Buffer.from(closeDelimiter + epilogue),
-  ]);
-  return {multipartBody, boundary};
-};
-
 const http = new httpm.HttpClient("codspeed-action", [], {
   allowRetries: true,
   maxRetries: 3,
@@ -107,28 +77,22 @@ const upload = async (
     if (!response.result) {
       throw new Error("Upload preparation failed: no result");
     }
-    core.info("Upload profile data");
-    const {multipartBody, boundary} = createMultipartBody(profilePath);
-    core.info(`Uploading ${multipartBody.length} bytes...`);
-    try {
-      const profile = fs.readFileSync(profilePath);
-      const uploadResponse = await http.request(
-        "PUT",
-        response.result.uploadUrl,
-        Readable.from(profile),
-        {
-          "Content-Type": "application/octet-stream",
-          "Content-Length": profile.length,
-          "Content-MD5": uploadMetadata.profileMd5,
-        }
-      );
-      core.debug(
-        `Upload response: ${uploadResponse.message.statusCode} ${uploadResponse.message.statusMessage}`
-      );
-    } catch (e) {
-      const err = e as httpm.HttpClientError;
+    core.info("Uploading profile data");
+    const profile = fs.readFileSync(profilePath);
+    core.debug(`Uploading ${profile.length} bytes...`);
+    const uploadResponse = await http.request(
+      "PUT",
+      response.result.uploadUrl,
+      Readable.from(profile),
+      {
+        "Content-Type": "application/octet-stream",
+        "Content-Length": profile.length,
+        "Content-MD5": uploadMetadata.profileMd5,
+      }
+    );
+    if (uploadResponse.message.statusCode !== 200) {
       throw new Error(
-        `Upload failed with status ${err.statusCode}: ${err.message}`
+        `Upload failed with status ${uploadResponse.message.statusCode}: ${uploadResponse.message.statusMessage}`
       );
     }
 
