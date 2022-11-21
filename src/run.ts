@@ -40,54 +40,49 @@ const outputListener = (line: string): void => {
   }
 };
 
-const run = async (inputs: ActionInputs): Promise<{profilePath: string}> =>
-  core.group("Run benchmarks", async () => {
-    const arch = await getArch();
-    const profilePath = getTempFile();
-    const valgrindOptions = [
-      "-q",
-      "--tool=callgrind",
-      "--cache-sim=yes",
-      "--I1=32768,8,64",
-      "--D1=32768,8,64",
-      "--LL=8388608,16,64",
-      "--instr-atstart=no",
-      "--compress-strings=no",
-      "--combine-dumps=yes",
-      "--dump-line=no",
-      `--callgrind-out-file=${profilePath}`,
-    ];
-    try {
-      await exec(
-        [
-          "setarch",
-          arch,
-          "-R",
-          "valgrind",
-          ...valgrindOptions,
-          inputs.run,
-        ].join(" "),
-        [],
-        {
-          env: {
-            ...process.env,
-            PYTHONMALLOC: "malloc",
-            PYTHONHASHSEED: "0",
-            ARCH: arch,
-            CODSPEED_ENV: "github",
-          },
-          silent: true,
-          listeners: {
-            stdline: outputListener,
-            errline: outputListener,
-          },
-        }
-      );
-    } catch (error) {
-      core.debug(`Error: ${error}`);
-      throw new Error("Failed to run benchmarks");
-    }
-    return {profilePath};
-  });
-
+const run = async (inputs: ActionInputs): Promise<{profilePath: string}> => {
+  core.startGroup("Run benchmarks");
+  const arch = await getArch();
+  const profilePath = getTempFile();
+  const valgrindOptions = [
+    "-q",
+    "--tool=callgrind",
+    "--cache-sim=yes",
+    "--I1=32768,8,64",
+    "--D1=32768,8,64",
+    "--LL=8388608,16,64",
+    "--instr-atstart=no",
+    "--compress-strings=no",
+    "--combine-dumps=yes",
+    "--dump-line=no",
+    `--callgrind-out-file=${profilePath}`,
+  ];
+  try {
+    await exec(
+      ["setarch", arch, "-R", "valgrind", ...valgrindOptions, inputs.run].join(
+        " "
+      ),
+      [],
+      {
+        env: {
+          ...process.env,
+          PYTHONMALLOC: "malloc",
+          PYTHONHASHSEED: "0",
+          ARCH: arch,
+          CODSPEED_ENV: "github",
+        },
+        silent: true,
+        listeners: {
+          stdline: outputListener,
+          errline: outputListener,
+        },
+      }
+    );
+  } catch (error) {
+    core.debug(`Error: ${error}`);
+    throw new Error("Failed to run benchmarks");
+  }
+  core.endGroup();
+  return {profilePath};
+};
 export default run;
