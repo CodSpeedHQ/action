@@ -14,9 +14,9 @@ Github Actions for running CodSpeed in your CI.
 - uses: CodSpeedHQ/action@v1
   with:
     # [REQUIRED for private repositories]
-    # The CodSpeed upload token: can be found at https://codspeed.com/settings
+    # The CodSpeed upload token: can be found at https://codspeed.io/settings
     # It's strongly recommended to use a secret for this value
-    # If you're using a public repository, you can omit this value
+    # If you're instrumenting a public repository, you can omit this value
     token: ""
 
     # [REQUIRED]
