@@ -52,6 +52,7 @@ const run = async (inputs: ActionInputs): Promise<{profilePath: string}> => {
     "--D1=32768,8,64",
     "--LL=8388608,16,64",
     "--instr-atstart=no",
+    "--collect-systime=nsec",
     "--compress-strings=no",
     "--combine-dumps=yes",
     "--dump-line=no",
