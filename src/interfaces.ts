@@ -19,6 +19,10 @@ export interface UploadMetadata {
     runId: number;
     job: string;
   };
+  runner: {
+    name: string;
+    version: string;
+  };
 }
 
 export interface PostResponse {

@@ -31,6 +31,10 @@ const getUploadMetadata = async ({
       runId: context.runId,
       job: context.job,
     },
+    runner: {
+      name: "@codspeed/action",
+      version: process.env.VERSION ?? "unknown",
+    },
   };
 };
 
