@@ -12,7 +12,7 @@ const banner = String.raw`
  / /    / __ \ / __  / \__ \ / __ \ / _ \ / _ \ / __  /
 / /___ / /_/ // /_/ / ___/ // /_/ //  __//  __// /_/ /
 \____/ \____/ \__,_/ /____// .___/ \___/ \___/ \__,_/
-  https://codspeed.io     /_/          runner ${VERSION}
+  https://codspeed.io     /_/          runner v${VERSION}
 
   `;
 
