@@ -2,6 +2,7 @@ import * as core from "@actions/core";
 import * as httpm from "@actions/http-client";
 import {ActionInputs, PostResponse, UploadMetadata} from "./interfaces";
 import * as fs from "fs";
+import * as tar from "tar";
 import {Readable} from "stream";
 import {context} from "@actions/github";
 import {TypedResponse} from "@actions/http-client/lib/interfaces";
@@ -18,6 +19,7 @@ const getUploadMetadata = async ({
   const hexMd5 = await md5File(profilePath);
   const b64Md5 = Buffer.from(hexMd5, "hex").toString("base64");
   return {
+    version: 1,
     tokenless: inputs.tokenless,
     ref: context.ref,
     headRef: context.payload?.pull_request?.head?.ref,
@@ -30,6 +32,10 @@ const getUploadMetadata = async ({
     ghData: {
       runId: context.runId,
       job: context.job,
+      sender: {
+        id: context.payload?.sender?.id,
+        login: context.payload?.sender?.login,
+      },
     },
     runner: {
       name: "@codspeed/action",
@@ -45,9 +51,19 @@ const http = new httpm.HttpClient("codspeed-action", [], {
 
 const upload = async (
   inputs: ActionInputs,
-  profilePath: string
+  profileFolder: string
 ): Promise<void> => {
   core.startGroup("Upload Results");
+  const profilePath = `${profileFolder}.tar.gz`;
+  await tar.c(
+    {
+      file: profilePath,
+      gzip: true,
+      cwd: profileFolder,
+    },
+    ["."]
+  );
+
   const uploadMetadata = await getUploadMetadata({profilePath, inputs});
   core.debug("Upload metadata:");
   core.debug(JSON.stringify(uploadMetadata, null, 2));
@@ -89,7 +105,7 @@ const upload = async (
     response.result.uploadUrl,
     Readable.from(profile),
     {
-      "Content-Type": "application/octet-stream",
+      "Content-Type": "application/gzip",
       "Content-Length": profile.length,
       "Content-MD5": uploadMetadata.profileMd5,
     }

@@ -6,6 +6,7 @@ export interface ActionInputs {
 }
 
 export interface UploadMetadata {
+  version?: number;
   tokenless: boolean;
   ref: string;
   headRef: string;
@@ -18,6 +19,10 @@ export interface UploadMetadata {
   ghData: {
     runId: number;
     job: string;
+    sender: {
+      id: number;
+      login: string;
+    };
   };
   runner: {
     name: string;
