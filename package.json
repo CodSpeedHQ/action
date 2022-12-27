@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.11.0",
-    "@typescript-eslint/parser": "^4.33.0",
+    "@typescript-eslint/parser": "^5.47.1",
     "cz-conventional-changelog": "^3.3.0",
     "esbuild": "^0.15.13",
     "eslint": "^7.32.0",
