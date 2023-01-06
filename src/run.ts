@@ -58,11 +58,20 @@ const run = async (inputs: ActionInputs): Promise<{profilePath: string}> => {
     "--dump-line=no",
     `--callgrind-out-file=${profilePath}`,
   ];
+
+  // Fixes a compatibility issue with cargo 1.66+ running directly under valgrind <3.20
+  const benchCommand = inputs.run.replace("cargo codspeed", "cargo-codspeed");
+
   try {
     await exec(
-      ["setarch", arch, "-R", "valgrind", ...valgrindOptions, inputs.run].join(
-        " "
-      ),
+      [
+        "setarch",
+        arch,
+        "-R",
+        "valgrind",
+        ...valgrindOptions,
+        benchCommand,
+      ].join(" "),
       [],
       {
         env: {
