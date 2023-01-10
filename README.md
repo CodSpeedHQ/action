@@ -30,7 +30,7 @@ Github Actions for running CodSpeed in your CI.
 
 # Example usage
 
-## With `pytest` and [`pytest-codspeed`](https://github.com/CodSpeedHQ/pytest-codspeed)
+## Python with `pytest` and [`pytest-codspeed`](https://github.com/CodSpeedHQ/pytest-codspeed)
 
 This worklow will run the benchmarks found in the `tests/` folder and upload the results to CodSpeed.
 
@@ -65,4 +65,49 @@ jobs:
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
           run: pytest tests/ --codspeed
+```
+
+## Rust with `cargo-codspeed` and `codspeed-criterion-compat` / `codspeed-bencher-compat`
+
+This worklow will run the benchmarks found in the `tests/` folder and upload the results to CodSpeed.
+
+It will be triggered on every push to the `main` branch and on every pull request.
+
+```yml
+name: codspeed-benchmarks
+
+on:
+  push:
+    branches:
+      - "main" # or "master"
+  pull_request:
+  # `workflow_dispatch` allows CodSpeed to trigger backtest
+  # performance analysis in order to generate initial data.
+  workflow_dispatch:
+
+jobs:
+  benchmarks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Cache Rust installation
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-codspeed
+        run: cargo install cargo-codspeed
+
+      - name: Build the benchmark target(s)
+        run: cargo codspeed build
+
+      - name: Run the benchmarks
+        uses: CodSpeedHQ/action@v1
+        with:
+          run: cargo codspeed run
+          token: ${{ secrets.CODSPEED_TOKEN }}
 ```

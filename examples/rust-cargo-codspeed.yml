@@ -15,13 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Cache Rust installation
-        uses: Swatinem/rust-cache@v2
-
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+
+      - name: Cache Rust installation
+        uses: Swatinem/rust-cache@v2
 
       - name: Install cargo-codspeed
         run: cargo install cargo-codspeed

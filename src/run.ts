@@ -4,6 +4,7 @@ import {ActionInputs} from "./interfaces";
 import {tmpdir} from "os";
 import {randomBytes} from "crypto";
 import * as Path from "path";
+import {mkdirSync} from "fs";
 
 const getArch = async (): Promise<string> => {
   let arch = "";
@@ -21,11 +22,15 @@ const getArch = async (): Promise<string> => {
   return arch.trim();
 };
 
-const getTempFile = (): string =>
-  Path.join(
+const getTempFolder = (): string => {
+  const folder = Path.join(
     tmpdir(),
     `profile.${randomBytes(6).readUIntLE(0, 6).toString(36)}.out`
   );
+  // Create the folder
+  mkdirSync(folder, {recursive: true});
+  return folder;
+};
 
 const outputListener = (line: string): void => {
   if (
@@ -40,13 +45,15 @@ const outputListener = (line: string): void => {
   }
 };
 
-const run = async (inputs: ActionInputs): Promise<{profilePath: string}> => {
+const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
   core.startGroup("Run benchmarks");
   const arch = await getArch();
-  const profilePath = getTempFile();
+  const profileFolder = getTempFolder();
+  const profilePath = `${profileFolder}/%p.out`;
   const valgrindOptions = [
     "-q",
     "--tool=callgrind",
+    "--trace-children=yes",
     "--cache-sim=yes",
     "--I1=32768,8,64",
     "--D1=32768,8,64",
@@ -93,6 +100,6 @@ const run = async (inputs: ActionInputs): Promise<{profilePath: string}> => {
     throw new Error("Failed to run benchmarks");
   }
   core.endGroup();
-  return {profilePath};
+  return {profileFolder};
 };
 export default run;

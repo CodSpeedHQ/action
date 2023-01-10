@@ -21,8 +21,8 @@ async function main(): Promise<void> {
     core.info(banner);
     const inputs = getActionInputs();
     await prepare();
-    const {profilePath} = await run(inputs);
-    await upload(inputs, profilePath);
+    const {profileFolder} = await run(inputs);
+    await upload(inputs, profileFolder);
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message);
   }
