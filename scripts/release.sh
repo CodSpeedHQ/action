@@ -8,10 +8,14 @@ if [ $# -ne 1 ]; then
 fi
 
 # Prechecks
+if [ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]; then
+  echo "You must be on the main branch to release"
+  exit 1
+fi
+git diff --exit-code
 pnpm format-check
 pnpm lint
 pnpm build
-git diff --exit-code
 
 # Bump version
 pnpm version $1 --git-tag-version=false
