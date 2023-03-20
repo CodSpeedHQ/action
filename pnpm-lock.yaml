@@ -5,6 +5,7 @@ specifiers:
   '@actions/exec': ^1.1.1
   '@actions/github': ^5.1.1
   '@actions/http-client': ^2.0.1
+  '@octokit/webhooks-types': ^6.10.0
   '@types/node': ^18.11.0
   '@types/tar': ^6.1.3
   '@typescript-eslint/parser': ^4.33.0
@@ -30,6 +31,7 @@ dependencies:
   tar: 6.1.13
 
 devDependencies:
+  '@octokit/webhooks-types': 6.10.0
   '@types/node': 18.11.9
   '@types/tar': 6.1.3
   '@typescript-eslint/parser': 4.33.0_3rubbgt5ekhqrcgx4uwls3neim
@@ -912,6 +914,10 @@ packages:
     dependencies:
       '@octokit/openapi-types': 12.11.0
     dev: false
+
+  /@octokit/webhooks-types/6.10.0:
+    resolution: {integrity: sha512-lDNv83BeEyxxukdQ0UttiUXawk9+6DkdjjFtm2GFED+24IQhTVaoSbwV9vWWKONyGLzRmCQqZmoEWkDhkEmPlw==}
+    dev: true
 
   /@sinonjs/commons/1.8.4:
     resolution: {integrity: sha512-RpmQdHVo8hCEHDVpO39zToS9jOhR6nw+/lQAzRNq9ErrGV9IeHM71XCn68svVl/euFeVW6BWX4p35gkhbOcSIQ==}

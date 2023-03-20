@@ -9,8 +9,8 @@ export interface UploadMetadata {
   version?: number;
   tokenless: boolean;
   ref: string;
-  headRef: string;
-  baseRef: string;
+  headRef?: string;
+  baseRef?: string;
   owner: string;
   repository: string;
   commitHash: string;
@@ -19,7 +19,7 @@ export interface UploadMetadata {
   ghData: {
     runId: number;
     job: string;
-    sender: {
+    sender?: {
       id: number;
       login: string;
     };
