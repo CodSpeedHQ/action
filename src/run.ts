@@ -50,6 +50,7 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
   const arch = await getArch();
   const profileFolder = getTempFolder();
   const profilePath = `${profileFolder}/%p.out`;
+  const childrenSkipPatterns = ["*/esbuild"];
   const valgrindOptions = [
     "-q",
     "--tool=callgrind",
@@ -64,6 +65,7 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
     "--combine-dumps=yes",
     "--dump-line=no",
     `--callgrind-out-file=${profilePath}`,
+    `--trace-children-skip=${childrenSkipPatterns.join(",")}`,
   ];
 
   // Fixes a compatibility issue with cargo 1.66+ running directly under valgrind <3.20
