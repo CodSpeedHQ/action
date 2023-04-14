@@ -1,5 +1,6 @@
 import * as core from "@actions/core";
 import {exec} from "@actions/exec";
+import {checkValgrindVersion} from "./helpers/valgrind";
 
 const prepare = async (): Promise<void> => {
   core.startGroup("Prepare environment");
@@ -7,6 +8,7 @@ const prepare = async (): Promise<void> => {
     await exec("sudo apt-get install -y valgrind", [], {
       silent: true,
     });
+    await checkValgrindVersion();
     try {
       await exec("pip show pytest-codspeed", [], {
         silent: true,
