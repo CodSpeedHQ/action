@@ -30,14 +30,15 @@
     "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.1",
     "@actions/github": "^5.1.1",
-    "@actions/http-client": "^2.1.0",
     "md5-file": "^5.0.0",
+    "node-fetch": "^2.6.9",
     "tar": "^6.1.13"
   },
   "devDependencies": {
     "@octokit/webhooks-types": "^6.10.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.3",
+    "@types/node-fetch": "^2.6.3",
     "@types/tar": "^6.1.4",
     "@typescript-eslint/parser": "^4.33.0",
     "cz-conventional-changelog": "^3.3.0",

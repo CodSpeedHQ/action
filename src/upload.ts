@@ -1,14 +1,13 @@
 import * as core from "@actions/core";
-import * as httpm from "@actions/http-client";
 import {ActionInputs, PostResponse, UploadMetadata} from "./interfaces";
 import * as fs from "fs";
 import * as tar from "tar";
 import {Readable} from "stream";
 import {context} from "@actions/github";
-import {TypedResponse} from "@actions/http-client/lib/interfaces";
 import type {PushEvent, PullRequestEvent} from "@octokit/webhooks-types";
 import crypto from "node:crypto";
 import md5File from "md5-file";
+import fetch, {postJson} from "./helpers/fetch";
 
 const getUploadMetadata = async ({
   profilePath,
@@ -56,11 +55,6 @@ const getUploadMetadata = async ({
   };
 };
 
-const http = new httpm.HttpClient("codspeed-action", [], {
-  allowRetries: true,
-  maxRetries: 3,
-});
-
 const upload = async (
   inputs: ActionInputs,
   profileFolder: string
@@ -87,47 +81,40 @@ const upload = async (
     core.info(`CodSpeed Run Hash: "${hash}"`);
   }
 
-  core.info("Preparing upload");
-  let response: TypedResponse<PostResponse>;
-  try {
-    const headers = inputs.tokenless
-      ? undefined
-      : {
-          Authorization: inputs.token,
-        };
-    response = await http.postJson<PostResponse>(
-      inputs.uploadUrl,
-      uploadMetadata,
-      headers
-    );
-  } catch (e) {
-    const err = e as httpm.HttpClientError;
-    throw new Error(
-      `Upload preparation failed (${err.statusCode}): ${err.message}`
-    );
-  }
-  if (!response.result) {
-    throw new Error("Upload preparation failed: no result");
-  }
+  core.info("Preparing upload...");
+  const headers = inputs.tokenless
+    ? undefined
+    : {
+        Authorization: inputs.token,
+      };
+  const response = await postJson<PostResponse>(
+    inputs.uploadUrl,
+    uploadMetadata,
+    {
+      headers,
+      retries: 3,
+    }
+  );
   core.info("Uploading profile data...");
   const profile = fs.readFileSync(profilePath);
   core.debug(`Uploading ${profile.length} bytes...`);
-  const uploadResponse = await http.request(
-    "PUT",
-    response.result.uploadUrl,
-    Readable.from(profile),
-    {
+  const uploadResponse = await fetch(response.uploadUrl, {
+    method: "PUT",
+    body: Readable.from(profile),
+    headers: {
       "Content-Type": "application/gzip",
-      "Content-Length": profile.length,
+      "Content-Length": profile.length.toString(),
       "Content-MD5": uploadMetadata.profileMd5,
-    }
-  );
-  if (uploadResponse.message.statusCode !== 200) {
+    },
+    retries: 3,
+  });
+  if (uploadResponse.status !== 200) {
     throw new Error(
-      `Upload failed with status ${uploadResponse.message.statusCode}: ${uploadResponse.message.statusMessage}`
+      `Upload failed with status ${
+        uploadResponse.status
+      }: ${await uploadResponse.text()}`
     );
   }
-
   core.info("Results uploaded.");
   core.endGroup();
 };
