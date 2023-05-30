@@ -73,11 +73,11 @@ const upload = async (
   const uploadMetadata = await getUploadMetadata({profilePath, inputs});
   core.debug("Upload metadata:");
   core.debug(JSON.stringify(uploadMetadata, null, 2));
-  const hash = crypto
-    .createHash("sha256")
-    .update(JSON.stringify(uploadMetadata))
-    .digest("hex");
   if (inputs.tokenless) {
+    const hash = crypto
+      .createHash("sha256")
+      .update(JSON.stringify(uploadMetadata))
+      .digest("hex");
     core.info(`CodSpeed Run Hash: "${hash}"`);
   }
 
