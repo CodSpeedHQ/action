@@ -5,6 +5,9 @@ import {checkValgrindVersion} from "./helpers/valgrind";
 const prepare = async (): Promise<void> => {
   core.startGroup("Prepare environment");
   try {
+    await exec("sudo apt-get update", [], {
+      silent: true,
+    });
     await exec("sudo apt-get install -y valgrind", [], {
       silent: true,
     });
