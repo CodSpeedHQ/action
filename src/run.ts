@@ -5,6 +5,7 @@ import {tmpdir} from "os";
 import {randomBytes} from "crypto";
 import * as Path from "path";
 import {mkdirSync} from "fs";
+import {harvestPerfMaps} from "./helpers/perfMaps";
 
 const getArch = async (): Promise<string> => {
   let arch = "";
@@ -106,6 +107,7 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
     core.debug(`Error: ${error}`);
     throw new Error("Failed to run benchmarks");
   }
+  await harvestPerfMaps(profileFolder);
   core.endGroup();
   return {profileFolder};
 };
