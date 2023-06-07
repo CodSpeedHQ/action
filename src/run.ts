@@ -6,6 +6,7 @@ import {randomBytes} from "crypto";
 import * as Path from "path";
 import {mkdirSync} from "fs";
 import {harvestPerfMaps} from "./helpers/perfMaps";
+import {getObjectsPathToIgnore} from "./helpers/objectsPath";
 
 const getArch = async (): Promise<string> => {
   let arch = "";
@@ -52,6 +53,8 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
   const profileFolder = getTempFolder();
   const profilePath = `${profileFolder}/%p.out`;
   const childrenSkipPatterns = ["*/esbuild"];
+  const objectsToIgnore = await getObjectsPathToIgnore();
+  core.debug(`Objects to ignore: ${objectsToIgnore.join(", ")}`);
   const valgrindOptions = [
     "-q",
     "--tool=callgrind",
@@ -67,6 +70,7 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
     "--dump-line=no",
     `--callgrind-out-file=${profilePath}`,
     `--trace-children-skip=${childrenSkipPatterns.join(",")}`,
+    ...objectsToIgnore.map(path => `--obj-skip=${path}`),
   ];
 
   // Fixes a compatibility issue with cargo 1.66+ running directly under valgrind <3.20
@@ -76,33 +80,31 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
   core.debug(`custom bin path: ${customBinPath}`);
 
   try {
-    await exec(
-      [
-        "setarch",
-        arch,
-        "-R",
-        "valgrind",
-        ...valgrindOptions,
-        benchCommand,
-      ].join(" "),
-      [],
-      {
-        env: {
-          ...process.env,
-          // prepend the custom dist/bin folder to the path, to run our custom node script instead of the regular node
-          PATH: `${customBinPath}:${process.env.PATH}`,
-          PYTHONMALLOC: "malloc",
-          PYTHONHASHSEED: "0",
-          ARCH: arch,
-          CODSPEED_ENV: "github",
-        },
-        silent: true,
-        listeners: {
-          stdline: outputListener,
-          errline: outputListener,
-        },
-      }
-    );
+    const command = [
+      "setarch",
+      arch,
+      "-R",
+      "valgrind",
+      ...valgrindOptions,
+      benchCommand,
+    ].join(" ");
+    core.debug(`Running: ${command}`);
+    await exec(command, [], {
+      env: {
+        ...process.env,
+        // prepend the custom dist/bin folder to the path, to run our custom node script instead of the regular node
+        PATH: `${customBinPath}:${process.env.PATH}`,
+        PYTHONMALLOC: "malloc",
+        PYTHONHASHSEED: "0",
+        ARCH: arch,
+        CODSPEED_ENV: "github",
+      },
+      silent: true,
+      listeners: {
+        stdline: outputListener,
+        errline: outputListener,
+      },
+    });
   } catch (error) {
     core.debug(`Error: ${error}`);
     throw new Error("Failed to run benchmarks");
