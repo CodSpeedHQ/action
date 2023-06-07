@@ -10,39 +10,73 @@ const execMock = exec as unknown as jest.Mock;
 
 describe("valgrind helpers", () => {
   describe("isVersionValid", () => {
-    test("should return true when version is greater than or equal to minimum version", () => {
-      expect(isVersionValid([3, 16, 0])).toBe(true);
-      expect(isVersionValid([3, 16, 1])).toBe(true);
-      expect(isVersionValid([3, 17, 0])).toBe(true);
-      expect(isVersionValid([4, 0, 0])).toBe(true);
-    });
-
-    test("should return false when version is less than minimum version", () => {
-      expect(isVersionValid([3, 15, 0])).toBe(false);
-      expect(isVersionValid([2, 0, 0])).toBe(false);
-      expect(isVersionValid([3, 15, 5])).toBe(false);
-      expect(isVersionValid([3, 14, 0])).toBe(false);
-    });
+    test.each([
+      {major: 3, minor: 16, patch: 0},
+      {major: 3, minor: 16, patch: 1},
+      {major: 3, minor: 17, patch: 0},
+      {major: 4, minor: 0, patch: 0},
+    ])(
+      "should return true when version $major-$minor-$patch is greater than or equal to minimum version",
+      version => {
+        expect(isVersionValid(version)).toBe(true);
+      }
+    );
+    test.each([
+      {major: 3, minor: 16, patch: 0, codspeed: 1},
+      {major: 4, minor: 0, patch: 0, codspeed: 1},
+      {major: 3, minor: 15, patch: 0, codspeed: 1},
+      {major: 2, minor: 0, patch: 0, codspeed: 1},
+    ])(
+      "should return true when version $major-$minor-$patch-codspeed$codspeed is from codspeed",
+      version => {
+        expect(isVersionValid(version)).toBe(true);
+      }
+    );
+    test.each([
+      {major: 3, minor: 15, patch: 0},
+      {major: 2, minor: 0, patch: 0},
+      {major: 3, minor: 15, patch: 5},
+      {major: 3, minor: 14, patch: 0},
+    ])(
+      "should return false when version $major-$minor-$patch is less than minimum version",
+      version => {
+        expect(isVersionValid(version)).toBe(false);
+      }
+    );
   });
 
   describe("parseValgrindVersion", () => {
-    test("should parse version string correctly", () => {
-      const versionString = "valgrind-3.16.0";
-      const version = parseValgrindVersion(versionString);
-      expect(version).toEqual([3, 16, 0]);
+    test.each([
+      {input: "valgrind-3.16.0", expected: {major: 3, minor: 16, patch: 0}},
+      {input: "valgrind-4.2.1", expected: {major: 4, minor: 2, patch: 1}},
+      {
+        input: "valgrind-3.16.0.codspeed",
+        expected: {major: 3, minor: 16, patch: 0, codspeed: 0},
+      },
+      {
+        input: "valgrind-3.16.0.codspeed1",
+        expected: {major: 3, minor: 16, patch: 0, codspeed: 1},
+      },
+      {
+        input: "valgrind-3.16.1.codspeed2",
+        expected: {major: 3, minor: 16, patch: 1, codspeed: 2},
+      },
+    ])("should parse version string '%s' correctly", ({input, expected}) => {
+      const version = parseValgrindVersion(input);
+      expect(version).toEqual(expected);
     });
 
     test("should throw an error if version string is not found", () => {
       const versionString = "some random string";
       expect(() => parseValgrindVersion(versionString)).toThrow(
-        "Failed to get valgrind version"
+        `Valgrind version ${versionString} is not valid`
       );
     });
 
     test("should throw an error if version string is invalid", () => {
       const versionString = "valgrind-3.16.0.1";
       expect(() => parseValgrindVersion(versionString)).toThrow(
-        "valgrind version 3.16.0.1 is not valid"
+        `Valgrind version ${versionString} is not valid`
       );
     });
   });
@@ -64,7 +98,7 @@ describe("valgrind helpers", () => {
         listeners.stdout?.(Buffer.from("valgrind-foo"));
       });
       await expect(checkValgrindVersion()).rejects.toThrow(
-        "valgrind version foo is not valid"
+        "Valgrind version valgrind-foo is not valid"
       );
     });
     test("should throw an error if installed valgrind version is too old", async () => {

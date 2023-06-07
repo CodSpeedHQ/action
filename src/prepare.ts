@@ -1,14 +1,17 @@
 import * as core from "@actions/core";
 import {exec} from "@actions/exec";
 import {checkValgrindVersion} from "./helpers/valgrind";
+import {downloadFile} from "./helpers/fetch";
 
 const prepare = async (): Promise<void> => {
   core.startGroup("Prepare environment");
   try {
-    await exec("sudo apt-get update", [], {
-      silent: true,
-    });
-    await exec("sudo apt-get install -y valgrind", [], {
+    const valgrindVersion = "3.21.0-0codspeed1";
+    const valgrindDebUrl = `https://github.com/CodSpeedHQ/valgrind-codspeed/releases/download/${valgrindVersion}/valgrind_${valgrindVersion}_amd64.deb`;
+    const debFilePath = "/tmp/valgrind-codspeed.deb";
+    await downloadFile(valgrindDebUrl, debFilePath);
+
+    await exec(`sudo apt install ${debFilePath}`, [], {
       silent: true,
     });
     await checkValgrindVersion();

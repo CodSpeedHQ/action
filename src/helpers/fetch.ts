@@ -1,5 +1,5 @@
 import nodeFetch, {RequestInit, Response} from "node-fetch";
-
+import fs from "node:fs";
 interface FetchOptions extends RequestInit {
   retries?: number;
   delay?: number;
@@ -50,4 +50,27 @@ export const postJson = async <T>(
     ...finalOptions,
   });
   return (await res.json()) as T;
+};
+
+export const downloadFile = async (
+  url: string,
+  path: string
+): Promise<void> => {
+  const response = await fetch(url, {});
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to download file. Status: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const fileStream = fs.createWriteStream(path);
+  await new Promise<void>((resolve, reject) => {
+    response.body.pipe(fileStream);
+    response.body.on("error", reject);
+    fileStream.on("finish", () => {
+      fileStream.close();
+      resolve();
+    });
+  });
 };
