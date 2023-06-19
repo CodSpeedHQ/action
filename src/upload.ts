@@ -95,6 +95,7 @@ const upload = async (
       retries: 3,
     }
   );
+  core.debug(`runId: ${response.runId}`);
   core.info("Uploading profile data...");
   const profile = fs.readFileSync(profilePath);
   core.debug(`Uploading ${profile.length} bytes...`);
