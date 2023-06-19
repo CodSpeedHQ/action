@@ -26,7 +26,24 @@ const getPythonObjects = async (): Promise<string[]> => {
   }
 };
 
+const getNodeJsObjects = async (): Promise<string[]> => {
+  let soOutput = "";
+  try {
+    await exec("node", ["-e", "console.log(process.execPath);"], {
+      silent: true,
+      listeners: {
+        stdout: (data: Buffer) => {
+          soOutput += data.toString();
+        },
+      },
+    });
+    return [soOutput.trim()];
+  } catch (error) {
+    core.debug(`Failed to get nodejs shared objects: ${error}`);
+    return [];
+  }
+};
+
 export const getObjectsPathToIgnore = async (): Promise<string[]> => {
-  const pythonSharedObjects = await getPythonObjects();
-  return pythonSharedObjects;
+  return [...(await getPythonObjects()), ...(await getNodeJsObjects())];
 };
