@@ -21,17 +21,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Set Node.js 16.x
-        uses: actions/setup-node@v3.5.1
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 16.x
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7
+          cache: pnpm
+          node-version-file: .nvmrc
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --prefer-offline
 
@@ -58,17 +53,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Set Node.js 16.x
-        uses: actions/setup-node@v3.5.1
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 16.x
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7
+          cache: pnpm
+          node-version-file: .nvmrc
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --prefer-offline
 
