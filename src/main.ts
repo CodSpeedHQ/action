@@ -5,6 +5,7 @@ import run from "./run";
 import upload from "./upload";
 
 const VERSION = process.env.VERSION;
+const CODSPEED_SKIP_UPLOAD = process.env.CODSPEED_SKIP_UPLOAD === "true";
 
 const banner = String.raw`
    ______            __ _____                         __
@@ -22,7 +23,9 @@ async function main(): Promise<void> {
     const inputs = getActionInputs();
     await prepare();
     const {profileFolder} = await run(inputs);
-    await upload(inputs, profileFolder);
+    if (!CODSPEED_SKIP_UPLOAD) {
+      await upload(inputs, profileFolder);
+    }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message);
   }
