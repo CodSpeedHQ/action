@@ -1,0 +1,48 @@
+#!/bin/bash
+set -eo pipefail
+
+# Custom script to replace node and run with V8 flags that make the execution of the
+# benchmarks more predictable.
+# Depending on the version of node, some flags may be deprecated.
+
+# Retrieve the original path by removing the folder containing CodSpeedHQ/action from the path.
+ORIGINAL_PATH=$(echo "$PATH" | tr ":" "\n" | grep -v "CodSpeedHQ/action" | tr "\n" ":")
+# Check if node is in the original path.
+if ! env PATH="$ORIGINAL_PATH" which node &>/dev/null; then
+    echo "Error: node not found in PATH. There might be a problem with the node installation."
+    exit 1
+fi
+# Save the real node path.
+REAL_NODE_PATH=$(env PATH="$ORIGINAL_PATH" which node)
+
+V8_FLAGS=(
+    "--hash-seed=1"
+    "--random-seed=1"
+    "--no-opt"
+    "--predictable"
+    "--predictable-gc-schedule"
+)
+
+# get node major version, using bash regex
+NODE_MAJOR_VERSION=$($REAL_NODE_PATH --version | sed -E 's/^v([0-9]+)\..*$/\1/')
+
+# add flags deprecated in node 18 in older versions
+if [ "$NODE_MAJOR_VERSION" -lt 18 ]; then
+    V8_FLAGS=(
+        "${V8_FLAGS[@]}"
+        "--no-randomize-hashes"
+    )
+fi
+# add flags deprecated in node 20 in older versions
+if [ "$NODE_MAJOR_VERSION" -lt 20 ]; then
+    V8_FLAGS=(
+        "${V8_FLAGS[@]}"
+        "--no-scavenge-task"
+    )
+fi
+
+echo "::debug::Running the CodSpeed node script, the node command that will be run:"
+echo "::debug::$REAL_NODE_PATH" "${V8_FLAGS[@]}" "$@"
+
+# Call the real "node" command with any arguments passed to this script.
+$REAL_NODE_PATH "${V8_FLAGS[@]}" "$@"

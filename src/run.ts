@@ -71,6 +71,9 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
   // Fixes a compatibility issue with cargo 1.66+ running directly under valgrind <3.20
   const benchCommand = inputs.run.replace("cargo codspeed", "cargo-codspeed");
 
+  const customBinPath = `${__dirname}/bin`;
+  core.debug(`custom bin path: ${customBinPath}`);
+
   try {
     await exec(
       [
@@ -85,17 +88,10 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
       {
         env: {
           ...process.env,
+          // prepend the custom dist/bin folder to the path, to run our custom node script instead of the regular node
+          PATH: `${customBinPath}:${process.env.PATH}`,
           PYTHONMALLOC: "malloc",
           PYTHONHASHSEED: "0",
-          CODSPEED_V8_FLAGS: [
-            "--hash-seed=1",
-            "--random-seed=1",
-            "--no-randomize-hashes",
-            "--no-scavenge-task",
-            "--no-opt ",
-            "--predictable ",
-            "--predictable-gc-schedule",
-          ].join(" "),
           ARCH: arch,
           CODSPEED_ENV: "github",
         },
