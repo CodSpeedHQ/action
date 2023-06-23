@@ -21,6 +21,8 @@ V8_FLAGS=(
     "--no-opt"
     "--predictable"
     "--predictable-gc-schedule"
+    "--interpreted-frames-native-stack"
+    "--perf-basic-prof"
 )
 
 # get node major version, using bash regex
