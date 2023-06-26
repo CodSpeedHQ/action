@@ -73,8 +73,11 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
     ...objectsToIgnore.map(path => `--obj-skip=${path}`),
   ];
 
-  // Fixes a compatibility issue with cargo 1.66+ running directly under valgrind <3.20
-  const benchCommand = inputs.run.replace("cargo codspeed", "cargo-codspeed");
+  const benchCommand = inputs.run
+    // Fixes a compatibility issue with cargo 1.66+ running directly under valgrind <3.20
+    .replace("cargo codspeed", "cargo-codspeed")
+    // Escape double quotes since we're going to run this command in a subshell
+    .replace(/"/g, '\\"');
 
   const customBinPath = `${__dirname}/bin`;
   core.debug(`custom bin path: ${customBinPath}`);
@@ -86,7 +89,7 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
       "-R",
       "valgrind",
       ...valgrindOptions,
-      benchCommand,
+      `sh -c "${benchCommand}"`,
     ].join(" ");
     core.debug(`Running: ${command}`);
     await exec(command, [], {
