@@ -92,7 +92,7 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
       `sh -c "${benchCommand}"`,
     ].join(" ");
     core.debug(`Running: ${command}`);
-    await exec(command, [], {
+    const exitCode = await exec(command, [], {
       env: {
         ...process.env,
         // prepend the custom dist/bin folder to the path, to run our custom node script instead of the regular node
@@ -108,6 +108,9 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
         errline: outputListener,
       },
     });
+    if (exitCode !== 0) {
+      throw new Error(`Process exited with non-zero exit code: ${exitCode}`);
+    }
   } catch (error) {
     core.debug(`Error: ${error}`);
     throw new Error("Failed to run benchmarks");
