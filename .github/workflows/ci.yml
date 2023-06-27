@@ -49,6 +49,21 @@ jobs:
           name: dist
           path: dist/
 
+  test-action:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-20.04", "ubuntu-22.04"]
+    runs-on: ${{ matrix.os }}
+    needs: check-dist
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        with:
+          run: echo "Working!"
+        env:
+          CODSPEED_SKIP_UPLOAD: true
+
   tests:
     runs-on: ubuntu-latest
 
