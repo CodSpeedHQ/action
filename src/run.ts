@@ -99,6 +99,20 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
         PATH: `${customBinPath}:${process.env.PATH}`,
         PYTHONMALLOC: "malloc",
         PYTHONHASHSEED: "0",
+        /**
+         * @deprecated this should not be used to add new flags and
+         * the getV8Flags from codspeed-node should be preferred
+         * (available from 1.2.0)
+         */
+        CODSPEED_V8_FLAGS: [
+          "--hash-seed=1",
+          "--random-seed=1",
+          "--no-randomize-hashes",
+          "--no-scavenge-task",
+          "--no-opt ",
+          "--predictable ",
+          "--predictable-gc-schedule",
+        ].join(" "),
         ARCH: arch,
         CODSPEED_ENV: "github",
       },

@@ -5,6 +5,9 @@ set -eo pipefail
 # benchmarks more predictable.
 # Depending on the version of node, some flags may be deprecated.
 
+# to avoid setting the variable for the children processes, unset it before running the node command
+unset __CODSPEED_NODE_CORE_INTROSPECTION_PATH__
+
 # Retrieve the original path by removing the folder containing CodSpeedHQ/action from the path.
 ORIGINAL_PATH=$(echo "$PATH" | tr ":" "\n" | grep -v "CodSpeedHQ/action" | tr "\n" ":")
 # Check if node is in the original path.
@@ -15,36 +18,26 @@ fi
 # Save the real node path.
 REAL_NODE_PATH=$(env PATH="$ORIGINAL_PATH" which node)
 
-V8_FLAGS=(
-    "--hash-seed=1"
-    "--random-seed=1"
-    "--no-opt"
-    "--predictable"
-    "--predictable-gc-schedule"
-    "--interpreted-frames-native-stack"
-    "--perf-basic-prof"
-)
+# Generate a random file in /tmp to store introspection data
+INTROSPECTION_FILE=$(mktemp)
+echo "::debug::Introspection file: $INTROSPECTION_FILE"
 
-# get node major version, using bash regex
-NODE_MAJOR_VERSION=$($REAL_NODE_PATH --version | sed -E 's/^v([0-9]+)\..*$/\1/')
+# Temporarily disable 'set -e' for the command and capture its exit code.
+echo ::debug::Introspection trigger: env __CODSPEED_NODE_CORE_INTROSPECTION_PATH__="$INTROSPECTION_FILE" $REAL_NODE_PATH "$@"
+env __CODSPEED_NODE_CORE_INTROSPECTION_PATH__="$INTROSPECTION_FILE" $REAL_NODE_PATH "$@"
 
-# add flags deprecated in node 18 in older versions
-if [ "$NODE_MAJOR_VERSION" -lt 18 ]; then
-    V8_FLAGS=(
-        "${V8_FLAGS[@]}"
-        "--no-randomize-hashes"
-    )
+# If the introspection file is empty, it means that the introspection didn't happen
+if [ ! -s "$INTROSPECTION_FILE" ]; then
+    echo "::debug::No introspection detected (no introspection file found)"
+    exit 0 # the exit code is 0 since otherwise the execution would have been stopped by 'set -e'
 fi
-# add flags deprecated in node 20 in older versions
-if [ "$NODE_MAJOR_VERSION" -lt 20 ]; then
-    V8_FLAGS=(
-        "${V8_FLAGS[@]}"
-        "--no-scavenge-task"
-    )
-fi
+
+# Retrieve the V8 flags from the introspection file
+V8_FLAGS=$(jq -r '.flags | join(" ")' "$INTROSPECTION_FILE")
+echo "::debug::V8 flags harvested from introspection: $V8_FLAGS"
 
 echo "::debug::Running the CodSpeed node script, the node command that will be run:"
-echo "::debug::$REAL_NODE_PATH" "${V8_FLAGS[@]}" "$@"
+echo "::debug::$REAL_NODE_PATH" $V8_FLAGS "$@"
 
 # Call the real "node" command with any arguments passed to this script.
-$REAL_NODE_PATH "${V8_FLAGS[@]}" "$@"
+$REAL_NODE_PATH $V8_FLAGS "$@"
