@@ -3,11 +3,66 @@ import {exec} from "@actions/exec";
 import {checkValgrindVersion} from "./helpers/valgrind";
 import {downloadFile} from "./helpers/fetch";
 
+const VALGRIND_CODSPEED_VERSION = "3.21.0-0codspeed1";
+
+interface SystemInfo {
+  os: string;
+  osVersion: string;
+  arch: string;
+}
+
+const getSystemInfo = async (): Promise<SystemInfo> => {
+  // execute lsb_release -r -s and return the output
+  let output = "";
+  let ret = await exec("lsb_release -i -r -s", [], {
+    silent: true,
+    listeners: {
+      stdout: (data: Buffer) => {
+        output += data.toString();
+      },
+    },
+  });
+  if (ret !== 0) {
+    throw new Error("Failed to get system info");
+  }
+  const [os, osVersion] = output.trim().split("\n");
+  output = "";
+  ret = await exec("dpkg --print-architecture", [], {
+    silent: true,
+    listeners: {
+      stdout: (data: Buffer) => {
+        output += data.toString();
+      },
+    },
+  });
+  if (ret !== 0) {
+    throw new Error("Failed to get system info");
+  }
+  const arch = output.trim();
+  return {os, osVersion, arch};
+};
+
 const prepare = async (): Promise<void> => {
   core.startGroup("Prepare environment");
   try {
-    const valgrindVersion = "3.21.0-0codspeed1";
-    const valgrindDebUrl = `https://github.com/CodSpeedHQ/valgrind-codspeed/releases/download/${valgrindVersion}/valgrind_${valgrindVersion}_amd64.deb`;
+    const sysInfo = await getSystemInfo();
+    core.debug(`OS: ${sysInfo.os}`);
+    core.debug(`OS Version: ${sysInfo.osVersion}`);
+    core.debug(`Arch: ${sysInfo.arch}`);
+    if (sysInfo.os !== "Ubuntu") {
+      throw new Error("Only Ubuntu is supported for now");
+    }
+    if (sysInfo.arch !== "amd64") {
+      throw new Error("Only amd64 is supported for now");
+    }
+    if (!["20.04", "22.04"].includes(sysInfo.osVersion)) {
+      throw new Error("Only Ubuntu 20.04 and 22.04 are supported for now");
+    }
+
+    const valgrindDebUrl =
+      "https://github.com/CodSpeedHQ/valgrind-codspeed/releases/download/" +
+      `${VALGRIND_CODSPEED_VERSION}/valgrind_${VALGRIND_CODSPEED_VERSION}_ubuntu-${sysInfo.osVersion}_amd64.deb`;
+    core.debug(`Instaling valgrind from ${valgrindDebUrl}`);
     const debFilePath = "/tmp/valgrind-codspeed.deb";
     await downloadFile(valgrindDebUrl, debFilePath);
 
