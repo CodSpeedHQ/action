@@ -5,7 +5,7 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/CodSpeedHQ/action)](https://github.com/CodSpeedHQ/action/releases)
 [![Discord](https://img.shields.io/badge/chat%20on-discord-7289da.svg)](https://discord.com/invite/MxpaCfKSqF)
 
-Github Actions for running CodSpeed in your CI.
+GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
 
 </div>
 

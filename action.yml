@@ -1,5 +1,9 @@
-name: "CodSpeed: Run"
-description: "Upload Avalanche performance data"
+name: "CodSpeed Performance Analysis"
+description: "Continuous benchmarking and performance checks"
+branding:
+  color: orange
+  icon: activity
+
 author: "Arthur Pastel"
 inputs:
   token:
