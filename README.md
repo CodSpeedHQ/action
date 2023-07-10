@@ -33,7 +33,7 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
 
 ## Python with `pytest` and [`pytest-codspeed`](https://github.com/CodSpeedHQ/pytest-codspeed)
 
-This worklow will run the benchmarks found in the `tests/` folder and upload the results to CodSpeed.
+This worfklow will run the benchmarks found in the `tests/` folder and upload the results to CodSpeed.
 
 It will be triggered on every push to the `main` branch and on every pull request.
 
@@ -70,7 +70,7 @@ jobs:
 
 ## Rust with `cargo-codspeed` and `codspeed-criterion-compat` / `codspeed-bencher-compat`
 
-This worklow will run the benchmarks found in the `tests/` folder and upload the results to CodSpeed.
+This workflow will run the benchmarks found in the `tests/` folder and upload the results to CodSpeed.
 
 It will be triggered on every push to the `main` branch and on every pull request.
 
@@ -92,16 +92,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+      - name: Setup rust toolchain, cache and cargo-codspeed binary
+        uses: moonrepo/setup-rust@v0
         with:
-          toolchain: stable
-
-      - name: Cache Rust installation
-        uses: Swatinem/rust-cache@v2
-
-      - name: Install cargo-codspeed
-        run: cargo install cargo-codspeed
+          channel: stable
+          cache-target: release
+          bins: cargo-codspeed
 
       - name: Build the benchmark target(s)
         run: cargo codspeed build
@@ -110,5 +106,38 @@ jobs:
         uses: CodSpeedHQ/action@v1
         with:
           run: cargo codspeed run
+          token: ${{ secrets.CODSPEED_TOKEN }}
+```
+
+## Node.js with `codspeed-node` and TypeScript
+
+This workflow will run the benchmarks found in the `benches/bench.ts` file and upload the results to CodSpeed.
+
+It will be triggered on every push to the `main` branch and on every pull request.
+
+```yml
+name: codspeed-benchmarks
+
+on:
+  push:
+    branches:
+      - "main" # or "master"
+  pull_request:
+  # `workflow_dispatch` allows CodSpeed to trigger backtest
+  # performance analysis in order to generate initial data.
+  workflow_dispatch:
+
+jobs:
+  benchmarks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: "actions/checkout@v3"
+      - uses: "actions/setup-node@v3"
+      - name: Install dependencies
+        run: npm install
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v1
+        with:
+          run: node -r esbuild-register benches/bench.ts
           token: ${{ secrets.CODSPEED_TOKEN }}
 ```
