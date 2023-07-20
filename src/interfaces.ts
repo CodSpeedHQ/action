@@ -2,6 +2,7 @@ export interface ActionInputs {
   token: string;
   uploadUrl: string;
   run: string;
+  workingDirectory: string | undefined;
   tokenless: boolean;
 }
 

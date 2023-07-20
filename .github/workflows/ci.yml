@@ -56,13 +56,20 @@ jobs:
         os: ["ubuntu-20.04", "ubuntu-22.04"]
     runs-on: ${{ matrix.os }}
     needs: check-dist
+    env:
+      CODSPEED_SKIP_UPLOAD: true
     steps:
       - uses: actions/checkout@v3
-      - uses: ./
+      - name: Check basic action execution
+        uses: ./
         with:
           run: echo "Working!"
-        env:
-          CODSPEED_SKIP_UPLOAD: true
+      - name: Check action in a custom directory
+        uses: ./
+        with:
+          working-directory: examples
+          # Check that the directory is actually changed
+          run: if [ $(basename $(pwd)) != "examples" ]; then exit 1; fi
 
   tests:
     runs-on: ubuntu-latest

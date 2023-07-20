@@ -12,6 +12,11 @@ inputs:
   run:
     description: "The command to run the benchmarks"
     required: true
+  working-directory:
+    description: |
+      The directory where the `run` command will be executed.
+      Warning: if you use defaults.working-directory, you must still set this parameter.
+    required: false
   upload_url:
     description: "The upload endpoint (for on-premise deployments)"
     default: "https://api.codspeed.io/upload"

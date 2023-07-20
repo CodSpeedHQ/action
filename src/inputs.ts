@@ -7,6 +7,8 @@ export const getActionInputs = (): ActionInputs => {
   return {
     uploadUrl: core.getInput("upload_url", {required: true}),
     run: core.getInput("run", {required: true}),
+    workingDirectory:
+      core.getInput("working-directory", {required: false}) || undefined,
     token,
     tokenless,
   };

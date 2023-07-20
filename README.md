@@ -25,6 +25,11 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     run: ""
 
     # [OPTIONAL]
+    # The directory where the `run` command will be executed.
+    # ⚠️ WARNING: if you use `defaults.run.working-directory`, you must still set this parameter.
+    working-directory: ""
+
+    # [OPTIONAL]
     # A custom upload url, only if you are using an on premise CodSpeed instance
     upload_url: ""
 ```

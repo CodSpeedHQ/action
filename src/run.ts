@@ -93,6 +93,7 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
     ].join(" ");
     core.debug(`Running: ${command}`);
     const exitCode = await exec(command, [], {
+      cwd: inputs.workingDirectory,
       env: {
         ...process.env,
         // prepend the custom dist/bin folder to the path, to run our custom node script instead of the regular node
