@@ -29,6 +29,7 @@ export interface UploadMetadata {
     name: string;
     version: string;
   };
+  workingDirectory?: string;
 }
 
 export interface PostResponse {

@@ -52,6 +52,7 @@ const getUploadMetadata = async ({
       name: "@codspeed/action",
       version: process.env.VERSION ?? "unknown",
     },
+    workingDirectory: inputs.workingDirectory,
   };
 };
 
