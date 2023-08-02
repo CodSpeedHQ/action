@@ -7,6 +7,8 @@ import * as Path from "path";
 import {mkdirSync} from "fs";
 import {harvestPerfMaps} from "./helpers/perfMaps";
 import {getObjectsPathToIgnore} from "./helpers/objectsPath";
+import {CodSpeedConfiguration} from "./config";
+import MongoTracer from "./MongoTracer";
 
 const getArch = async (): Promise<string> => {
   let arch = "";
@@ -47,10 +49,16 @@ const outputListener = (line: string): void => {
   }
 };
 
-const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
+const run = async (
+  inputs: ActionInputs,
+  config: CodSpeedConfiguration
+): Promise<{profileFolder: string}> => {
   core.startGroup("Run benchmarks");
-  const arch = await getArch();
   const profileFolder = getTempFolder();
+  const mongoTracer =
+    config.integrations?.mongodb && new MongoTracer(profileFolder);
+  await mongoTracer?.start();
+  const arch = await getArch();
   const profilePath = `${profileFolder}/%p.out`;
   const childrenSkipPatterns = ["*/esbuild"];
   const objectsToIgnore = await getObjectsPathToIgnore();
@@ -131,6 +139,7 @@ const run = async (inputs: ActionInputs): Promise<{profileFolder: string}> => {
     throw new Error("Failed to run benchmarks");
   }
   await harvestPerfMaps(profileFolder);
+  mongoTracer?.stop();
   core.endGroup();
   return {profileFolder};
 };

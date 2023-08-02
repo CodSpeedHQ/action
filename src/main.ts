@@ -3,6 +3,7 @@ import {getActionInputs} from "./inputs";
 import prepare from "./prepare";
 import run from "./run";
 import upload from "./upload";
+import {getConfig} from "./config";
 
 const VERSION = process.env.VERSION;
 const CODSPEED_SKIP_UPLOAD = process.env.CODSPEED_SKIP_UPLOAD === "true";
@@ -21,10 +22,12 @@ async function main(): Promise<void> {
   try {
     core.info(banner);
     const inputs = getActionInputs();
-    await prepare();
-    const {profileFolder} = await run(inputs);
+    const config = getConfig();
+
+    await prepare(config);
+    const {profileFolder} = await run(inputs, config);
     if (!CODSPEED_SKIP_UPLOAD) {
-      await upload(inputs, profileFolder);
+      await upload(inputs, config, profileFolder);
     }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message);

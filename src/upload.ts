@@ -8,13 +8,16 @@ import type {PushEvent, PullRequestEvent} from "@octokit/webhooks-types";
 import crypto from "node:crypto";
 import md5File from "md5-file";
 import fetch, {postJson} from "./helpers/fetch";
+import {CodSpeedConfiguration} from "./config";
 
 const getUploadMetadata = async ({
   profilePath,
   inputs,
+  config,
 }: {
   profilePath: string;
   inputs: ActionInputs;
+  config: CodSpeedConfiguration;
 }): Promise<UploadMetadata> => {
   const pull_request = context.payload?.pull_request as
     | PullRequestEvent["pull_request"]
@@ -29,6 +32,10 @@ const getUploadMetadata = async ({
     pull_request?.head.repo.id === pull_request?.base.repo.id
       ? pull_request?.head.ref
       : `${pull_request?.head.repo.owner.login}:${pull_request?.head.ref}`;
+  const integrations = [];
+  if (config.integrations?.mongodb) {
+    integrations.push("mongodb");
+  }
   return {
     version: 1,
     tokenless: inputs.tokenless,
@@ -51,12 +58,14 @@ const getUploadMetadata = async ({
     runner: {
       name: "@codspeed/action",
       version: process.env.VERSION ?? "unknown",
+      integrations,
     },
   };
 };
 
 const upload = async (
   inputs: ActionInputs,
+  config: CodSpeedConfiguration,
   profileFolder: string
 ): Promise<void> => {
   core.startGroup("Upload Results");
@@ -70,7 +79,7 @@ const upload = async (
     ["."]
   );
 
-  const uploadMetadata = await getUploadMetadata({profilePath, inputs});
+  const uploadMetadata = await getUploadMetadata({profilePath, inputs, config});
   core.debug("Upload metadata:");
   core.debug(JSON.stringify(uploadMetadata, null, 2));
   if (inputs.tokenless) {

@@ -28,6 +28,7 @@ export interface UploadMetadata {
   runner: {
     name: string;
     version: string;
+    integrations: string[];
   };
 }
 

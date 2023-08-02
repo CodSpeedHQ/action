@@ -2,8 +2,10 @@ import * as core from "@actions/core";
 import {exec} from "@actions/exec";
 import {checkValgrindVersion} from "./helpers/valgrind";
 import {downloadFile} from "./helpers/fetch";
+import {CodSpeedConfiguration} from "./config";
 
 const VALGRIND_CODSPEED_VERSION = "3.21.0-0codspeed1";
+const MONGODB_TRACER_VERSION = "0.1.2";
 
 interface SystemInfo {
   os: string;
@@ -42,7 +44,34 @@ const getSystemInfo = async (): Promise<SystemInfo> => {
   return {os, osVersion, arch};
 };
 
-const prepare = async (): Promise<void> => {
+const installValgrind = async (sysInfo: SystemInfo): Promise<void> => {
+  const valgrindDebUrl =
+    "https://github.com/CodSpeedHQ/valgrind-codspeed/releases/download/" +
+    `${VALGRIND_CODSPEED_VERSION}/valgrind_${VALGRIND_CODSPEED_VERSION}_ubuntu-${sysInfo.osVersion}_amd64.deb`;
+  core.debug(`Instaling valgrind from ${valgrindDebUrl}`);
+  const debFilePath = "/tmp/valgrind-codspeed.deb";
+  await downloadFile(valgrindDebUrl, debFilePath);
+
+  await exec(`sudo apt install ${debFilePath}`, [], {
+    silent: true,
+  });
+  await checkValgrindVersion();
+};
+
+const installMongoTracer = async (): Promise<void> => {
+  const installerUrl = `https://codspeed-public-assets.s3.eu-west-1.amazonaws.com/mongo-tracer/v${MONGODB_TRACER_VERSION}/cs-mongo-tracer-installer.sh`;
+  const installerFilePath = "/tmp/cs-mongo-tracer-installer.sh";
+  await downloadFile(installerUrl, installerFilePath);
+
+  const retCode = await exec(`sh ${installerFilePath}`, [], {
+    silent: true,
+  });
+  if (retCode !== 0) {
+    throw new Error("Failed to install MongoDB Tracer");
+  }
+};
+
+const prepare = async (config: CodSpeedConfiguration): Promise<void> => {
   core.startGroup("Prepare environment");
   try {
     const sysInfo = await getSystemInfo();
@@ -58,18 +87,10 @@ const prepare = async (): Promise<void> => {
     if (!["20.04", "22.04"].includes(sysInfo.osVersion)) {
       throw new Error("Only Ubuntu 20.04 and 22.04 are supported for now");
     }
-
-    const valgrindDebUrl =
-      "https://github.com/CodSpeedHQ/valgrind-codspeed/releases/download/" +
-      `${VALGRIND_CODSPEED_VERSION}/valgrind_${VALGRIND_CODSPEED_VERSION}_ubuntu-${sysInfo.osVersion}_amd64.deb`;
-    core.debug(`Instaling valgrind from ${valgrindDebUrl}`);
-    const debFilePath = "/tmp/valgrind-codspeed.deb";
-    await downloadFile(valgrindDebUrl, debFilePath);
-
-    await exec(`sudo apt install ${debFilePath}`, [], {
-      silent: true,
-    });
-    await checkValgrindVersion();
+    await installValgrind(sysInfo);
+    if (config.integrations?.mongodb !== undefined) {
+      await installMongoTracer();
+    }
     try {
       await exec("pip show pytest-codspeed", [], {
         silent: true,
