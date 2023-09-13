@@ -66,9 +66,9 @@ const prepare = async (): Promise<void> => {
     const debFilePath = "/tmp/valgrind-codspeed.deb";
     await downloadFile(valgrindDebUrl, debFilePath);
 
-    await exec(`sudo apt install ${debFilePath}`, [], {
-      silent: true,
-    });
+    // always update the `apt` index before installing
+    await exec(`sudo apt update`, [], {silent: true});
+    await exec(`sudo apt install ${debFilePath}`, [], {silent: true});
     await checkValgrindVersion();
     try {
       await exec("pip show pytest-codspeed", [], {
