@@ -76,7 +76,9 @@ const prepare = async (): Promise<void> => {
       });
     } catch (e) {
       core.warning(
-        "pytest-codspeed is not installed in your environment. Installing it..."
+        "[DEPRECATED] pytest-codspeed is not installed in your environment. Installing it... \n" +
+          "This automatic pytest-codspeed installation is deprecated and will be removed in the next major version. " +
+          "Please install pytest-codspeed manually."
       );
       await exec("pip install pytest-codspeed", [], {
         silent: true,
