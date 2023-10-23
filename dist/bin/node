@@ -29,14 +29,26 @@ REAL_NODE_PATH=$(env PATH="$ORIGINAL_PATH" which node)
 INTROSPECTION_FILE=$(mktemp)
 echo_debug "Introspection file: $INTROSPECTION_FILE"
 
-# Temporarily disable 'set -e' for the command and capture its exit code.
 echo_debug "Introspection trigger: env __CODSPEED_NODE_CORE_INTROSPECTION_PATH__=$INTROSPECTION_FILE" $REAL_NODE_PATH "$@"
-env __CODSPEED_NODE_CORE_INTROSPECTION_PATH__="$INTROSPECTION_FILE" $REAL_NODE_PATH "$@"
+# Temporarily disable 'set -e' for the command and capture its exit code.
+set +e
+{
+    env __CODSPEED_NODE_CORE_INTROSPECTION_PATH__="$INTROSPECTION_FILE" $REAL_NODE_PATH "$@"
+    FIRST_EXIT_CODE=$?
+}
+set -e
 
-# If the introspection file is empty, it means that the introspection didn't happen
+INTROSPECTION_EXIT_CODE=213
+# If the exit code was anything other than the INTROSPECTION_EXIT_CODE, exit with that code.
+# If no introspection happened, we will exit here with the original exit code.
+if [ "$FIRST_EXIT_CODE" -ne $INTROSPECTION_EXIT_CODE ]; then
+    echo_debug "::debug::No introspection detected (exit code: $FIRST_EXIT_CODE)"
+    exit "$FIRST_EXIT_CODE"
+fi
+# If the introspection file is empty, it means that the introspection didn't happen (exit code collision).
 if [ ! -s "$INTROSPECTION_FILE" ]; then
-    echo_debug "No introspection detected (no introspection file found)"
-    exit 0 # the exit code is 0 since otherwise the execution would have been stopped by 'set -e'
+    echo_debug "::debug::No introspection detected (no introspection file found)"
+    exit "$FIRST_EXIT_CODE"
 fi
 
 # Retrieve the V8 flags from the introspection file
