@@ -38,7 +38,7 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
 
 ## Python with `pytest` and [`pytest-codspeed`](https://github.com/CodSpeedHQ/pytest-codspeed)
 
-This worfklow will run the benchmarks found in the `tests/` folder and upload the results to CodSpeed.
+This workflow will run the benchmarks found in the `tests/` folder and upload the results to CodSpeed.
 
 It will be triggered on every push to the `main` branch and on every pull request.
 
@@ -114,9 +114,9 @@ jobs:
           token: ${{ secrets.CODSPEED_TOKEN }}
 ```
 
-## Node.js with `codspeed-node` and TypeScript
+## Node.js with `codspeed-node`, TypeScript and `vitest`
 
-This workflow will run the benchmarks found in the `benches/bench.ts` file and upload the results to CodSpeed.
+This workflow will run the benchmarks defined with `vitest`'s `bench` function and upload the results to CodSpeed.
 
 It will be triggered on every push to the `main` branch and on every pull request.
 
@@ -143,6 +143,6 @@ jobs:
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v1
         with:
-          run: node -r esbuild-register benches/bench.ts
+          run: npx vitest bench
           token: ${{ secrets.CODSPEED_TOKEN }}
 ```
