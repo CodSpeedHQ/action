@@ -1,2 +1,0 @@
-dist/** -diff linguist-generated=true
-dist/bin/node -diff linguist-generated=false
