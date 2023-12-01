@@ -7,6 +7,8 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+## [2.0.0] - 2023-12-01
+
 ### Breaking changes
 
 - `upload_url` input is now `upload-url`

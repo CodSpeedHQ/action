@@ -12,10 +12,10 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
 # Usage
 
 ```yaml
-- uses: CodSpeedHQ/action@v1
+- uses: CodSpeedHQ/action@v2
   with:
     # [REQUIRED for private repositories]
-    # The CodSpeed upload token: can be found at https://codspeed.io/settings
+    # The CodSpeed upload token: can be found at https://codspeed.io/<org>/<repo>/settings
     # It's strongly recommended to use a secret for this value
     # If you're instrumenting a public repository, you can omit this value
     token: ""
@@ -31,7 +31,7 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
 
     # [OPTIONAL]
     # A custom upload url, only if you are using an on premise CodSpeed instance
-    upload_url: ""
+    upload-url: ""
 ```
 
 # Example usage
@@ -67,7 +67,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v1
+        uses: CodSpeedHQ/action@v2
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
           run: pytest tests/ --codspeed
@@ -108,7 +108,7 @@ jobs:
         run: cargo codspeed build
 
       - name: Run the benchmarks
-        uses: CodSpeedHQ/action@v1
+        uses: CodSpeedHQ/action@v2
         with:
           run: cargo codspeed run
           token: ${{ secrets.CODSPEED_TOKEN }}
@@ -141,7 +141,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v1
+        uses: CodSpeedHQ/action@v2
         with:
           run: npx vitest bench
           token: ${{ secrets.CODSPEED_TOKEN }}
