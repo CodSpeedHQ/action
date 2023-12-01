@@ -30,25 +30,23 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # Build the args string
-    - id: args
-      shell: bash
-      run: |
-        args=""
-        if [ -n "${{ inputs.token }}" ]; then
-          args="$args --token ${{ inputs.token }}"
-        fi
-        if [ -n "${{ inputs.working-directory }}" ]; then
-          args="$args --working-directory=${{ inputs.working-directory }}"
-        fi
-        if [ -n "${{ inputs.upload-url }}" ]; then
-          args="$args --upload-url=${{ inputs.upload-url }}"
-        fi
-        echo "args=$args" >> $GITHUB_OUTPUT
-
-    # Install the CodSpeedHQ/runner
     - shell: bash
       run: |
+        # Configure and run codspeed-runner
+
+        # Get the runner arguments
+        RUNNER_ARGS=""
+        if [ -n "${{ inputs.token }}" ]; then
+          RUNNER_ARGS="$RUNNER_ARGS --token ${{ inputs.token }}"
+        fi
+        if [ -n "${{ inputs.working-directory }}" ]; then
+          RUNNER_ARGS="$RUNNER_ARGS --working-directory=${{ inputs.working-directory }}"
+        fi
+        if [ -n "${{ inputs.upload-url }}" ]; then
+          RUNNER_ARGS="$RUNNER_ARGS --upload-url=${{ inputs.upload-url }}"
+        fi
+
+        # Install the CodSpeedHQ/runner
         head_status=$(curl -I -fsSL -w "%{http_code}" -o /dev/null https://github.com/CodSpeedHQ/runner/releases/download/v${{ inputs.runner-version }}/codspeed-runner-installer.sh)
         if [ "$head_status" -eq 404 ]; then
           echo "Error: Version ${{ inputs.runner-version }} is not available in https://github.com/CodSpeedHQ/runner/releases, please a correct version."
@@ -57,6 +55,5 @@ runs:
           curl -fsSL https://github.com/CodSpeedHQ/runner/releases/download/v${{ inputs.runner-version }}/codspeed-runner-installer.sh | bash -s -- --quiet
         fi
 
-    # Run the benchmarks
-    - shell: bash
-      run: codspeed-runner ${{ steps.args.outputs.args }} -- '${{ inputs.run }}'
+        # Run the benchmarks
+        codspeed-runner $RUNNER_ARGS -- '${{ inputs.run }}'
