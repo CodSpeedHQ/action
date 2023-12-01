@@ -54,7 +54,7 @@ runs:
           echo "Error: Version ${{ inputs.runner-version }} is not available in https://github.com/CodSpeedHQ/runner/releases, please a correct version."
           exit 1
         else
-          curl -fsSL https://github.com/CodSpeedHQ/runner/releases/download/v${{ inputs.runner-version }}/codspeed-runner-installer.sh | bash
+          curl -fsSL https://github.com/CodSpeedHQ/runner/releases/download/v${{ inputs.runner-version }}/codspeed-runner-installer.sh | bash -s -- --quiet
         fi
 
     # Run the benchmarks
