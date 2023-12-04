@@ -25,19 +25,19 @@ jobs:
       - name: Check basic action execution
         uses: ./
         with:
-          runner-version: 2.0.2-beta.1
+          runner-version: 2.0.2-beta.2
           run: echo "Working!"
       - name: Check action in a custom directory
         uses: ./
         with:
           working-directory: examples
           # Check that the directory is actually changed
-          runner-version: 2.0.2-beta.1
+          runner-version: 2.0.2-beta.2
           run: if [ $(basename $(pwd)) != "examples" ]; then exit 1; fi
       - name: Check action with multiline command
         uses: ./
         with:
-          runner-version: 2.0.2-beta.1
+          runner-version: 2.0.2-beta.2
           run: |
             echo "Working";
             echo "with";
