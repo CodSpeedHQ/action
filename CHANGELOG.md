@@ -7,6 +7,10 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+## [2.0.2] - 2023-12-04
+
+- fix: control the environment when running `cargo-codspeed`, see https://github.com/CodSpeedHQ/runner/pull/8
+
 ## [2.0.1] - 2023-12-01
 
 - feat: simplify action output
