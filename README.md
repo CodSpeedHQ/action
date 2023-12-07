@@ -30,6 +30,16 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     working-directory: ""
 
     # [OPTIONAL]
+    # Comma-separated list of instruments to enable. Possible values: mongodb.
+    instruments: ""
+
+    # [OPTIONAL]
+    # The name of the environment variable that contains the MongoDB URI to patch.
+    # If not provided, user will have to provide it dynamically through a CodSpeed integration.
+    # Only used if the `mongodb` instrument is enabled.
+    mongo_uri_env_name: ""
+
+    # [OPTIONAL]
     # A custom upload url, only if you are using an on premise CodSpeed instance
     upload-url: ""
 ```

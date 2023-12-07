@@ -27,6 +27,17 @@ inputs:
     default: "2.0.3"
     required: true
 
+  instruments:
+    description: |
+      Comma separated list of instruments to enable. The following instruments are available:
+      - `mongodb`: MongoDB instrumentation, requires the MongoDB instrument to be enabled for the organization in CodSpeed
+    required: false
+  mongo-uri-env-name:
+    description: |
+      The name of the environment variable containing the MongoDB URI. Requires the `mongodb` instrument to be activated in `instruments`.
+      If the instrumentation is enabled and this value is not set, the user will need to dynamically provide the MongoDB URI to the CodSpeed runner.
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -44,6 +55,12 @@ runs:
         fi
         if [ -n "${{ inputs.upload-url }}" ]; then
           RUNNER_ARGS="$RUNNER_ARGS --upload-url=${{ inputs.upload-url }}"
+        fi
+        if [ -n "${{ inputs.instruments }}" ]; then
+          RUNNER_ARGS="$RUNNER_ARGS --instruments=${{ inputs.instruments }}"
+        fi
+        if [ -n "${{ inputs.mongo-uri-env-name }}" ]; then
+          RUNNER_ARGS="$RUNNER_ARGS --mongo-uri-env-name=${{ inputs.mongo-uri-env-name }}"
         fi
 
         # Install the CodSpeedHQ/runner
