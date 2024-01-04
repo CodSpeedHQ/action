@@ -24,7 +24,7 @@ inputs:
 
   runner-version:
     description: "The version of the runner to use"
-    default: "2.0.2"
+    default: "2.0.3"
     required: true
 
 runs:
