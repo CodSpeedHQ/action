@@ -7,6 +7,11 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+## [2.0.3] - 2024-01-04
+
+- fix: bump cargo-dist to remove broken pipe logs, see https://github.com/CodSpeedHQ/runner/pull/12
+- fix(uploader): handle error response when retrieving upload data, see https://github.com/CodSpeedHQ/runner/pull/11
+
 ## [2.0.2] - 2023-12-04
 
 - fix: control the environment when running `cargo-codspeed`, see https://github.com/CodSpeedHQ/runner/pull/8
