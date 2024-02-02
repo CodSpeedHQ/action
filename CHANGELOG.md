@@ -7,6 +7,11 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+## [2.1.1] - 2024-02-02
+
+- feat: integrate the mongodb instrument, see https://github.com/CodSpeedHQ/runner/pull/9
+- fix(instruments): use IP address instead of localhost for MongoDB URI, see https://github.com/CodSpeedHQ/runner/pull/13
+
 ## [2.0.3] - 2024-01-04
 
 - fix: bump cargo-dist to remove broken pipe logs, see https://github.com/CodSpeedHQ/runner/pull/12
