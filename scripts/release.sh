@@ -25,7 +25,7 @@ MAJOR_VERSION=$(echo $NEW_VERSION | cut -d. -f1)
 
 # Fail if there are any unstaged changes left
 git diff --exit-code
-git commit -m "Release v$NEW_VERSION 🚀"
+git commit -m "Release v$NEW_VERSION 🚀" --allow-empty
 git tag -s -fa v$NEW_VERSION -m "Release v$NEW_VERSION 🚀"
 git tag -s -fa v$MAJOR_VERSION -m "Release v$NEW_VERSION 🚀"
 git push origin tag v$NEW_VERSION
