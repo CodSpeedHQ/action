@@ -7,6 +7,10 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+## [2.2.0] - 2024-02-22
+
+- feat: upload execution logs to ease debugging, see https://github.com/CodSpeedHQ/runner/pull/14
+
 ## [2.1.1] - 2024-02-02
 
 - feat: integrate the mongodb instrument, see https://github.com/CodSpeedHQ/runner/pull/9
