@@ -7,6 +7,27 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+## [2.4.1] - 2024-04-29
+
+- fix: retrieve root_repository_path from git dir, see https://github.com/CodSpeedHQ/runner/pull/20
+
+## [2.4.0] - 2024-04-26
+
+- feat: use current checked-out commit hash in UploadMetadata, see https://github.com/CodSpeedHQ/runner/pull/18
+
+## [2.3.1] - 2024-04-24
+
+- fix: properly display stderr and stdout when a setup command fails, see https://github.com/CodSpeedHQ/runner/pull/19
+
+## [2.3.0] - 2024-02-31
+
+- feat(runner): support debian 11 and 12, see https://github.com/CodSpeedHQ/runner/pull/17
+
+## [2.2.1] - 2024-02-22
+
+- feat: handle symlinks in ignored objects, see https://github.com/CodSpeedHQ/runner/pull/16
+- chore: add a post anounce bump workflow, see https://github.com/CodSpeedHQ/runner/pull/15
+
 ## [2.2.0] - 2024-02-22
 
 - feat: upload execution logs to ease debugging, see https://github.com/CodSpeedHQ/runner/pull/14
