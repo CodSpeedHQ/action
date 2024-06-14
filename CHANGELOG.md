@@ -7,6 +7,8 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+- feat(upload): better upload endpoint error handling, see https://github.com/CodSpeedHQ/runner/pull/29
+
 ## [2.4.1] - 2024-04-29
 
 - fix: retrieve root_repository_path from git dir, see https://github.com/CodSpeedHQ/runner/pull/20
