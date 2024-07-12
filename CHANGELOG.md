@@ -7,6 +7,8 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+- chore: add error chain debug, see https://github.com/CodSpeedHQ/runner/pull/34
+
 ## [2.4.2] - 2024-06-14
 
 - feat(upload): better upload endpoint error handling, see https://github.com/CodSpeedHQ/runner/pull/29
