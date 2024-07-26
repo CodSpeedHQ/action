@@ -7,6 +7,8 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+## [2.4.4] - 2024-07-26
+
 - chore: report that a new version is available
 
 ## [2.4.3] - 2024-07-12
