@@ -7,6 +7,10 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+- chore(ci): run ci on every pull request, see https://github.com/CodSpeedHQ/runner/pull/23
+- feat/add codspeed cli, see https://github.com/CodSpeedHQ/runner/pull/36
+- feat: bump rust toolchain, see https://github.com/CodSpeedHQ/runner/pull/37
+
 ## [2.4.3] - 2024-07-12
 
 - chore: add error chain debug, see https://github.com/CodSpeedHQ/runner/pull/34

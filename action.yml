@@ -78,4 +78,4 @@ runs:
         fi
 
         # Run the benchmarks
-        codspeed-runner $RUNNER_ARGS -- '${{ inputs.run }}'
+        codspeed run $RUNNER_ARGS -- '${{ inputs.run }}'
