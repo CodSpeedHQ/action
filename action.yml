@@ -44,9 +44,6 @@ runs:
       run: |
         # Configure and run codspeed-runner
 
-        # Report that a new version is available
-        echo "::warning title=CodSpeed Action Update::A new version v3 is available at https://github.com/CodSpeedHQ/action/releases. You're currently using version v2. Please update to the latest version for improved features and bug fixes."
-
         if [ -n "${{ inputs.runner-version }}" ]; then
           RUNNER_VERSION="${{ inputs.runner-version }}"
         else
@@ -81,4 +78,4 @@ runs:
         fi
 
         # Run the benchmarks
-        codspeed-runner $RUNNER_ARGS -- '${{ inputs.run }}'
+        codspeed run $RUNNER_ARGS -- '${{ inputs.run }}'

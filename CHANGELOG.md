@@ -7,6 +7,10 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+- chore(ci): run ci on every pull request, by @adriencaccia in https://github.com/CodSpeedHQ/runner/pull/23
+- feat/add codspeed cli, by @adriencaccia in https://github.com/CodSpeedHQ/runner/pull/36
+- feat: bump rust toolchain, by @adriencaccia in https://github.com/CodSpeedHQ/runner/pull/37
+
 ## [2.4.4] - 2024-07-26
 
 - chore: report that a new version is available
