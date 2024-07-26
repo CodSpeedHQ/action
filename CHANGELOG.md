@@ -7,6 +7,8 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 
 ## [Unreleased]
 
+- chore: report that a new version is available
+
 ## [2.4.3] - 2024-07-12
 
 - chore: add error chain debug, see https://github.com/CodSpeedHQ/runner/pull/34
