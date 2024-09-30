@@ -1,4 +1,4 @@
-name: codspeed-benchmarks
+name: CodSpeed
 
 on:
   push:
@@ -10,13 +10,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  benchmarks:
+  name: Run benchmarks
+  codspeed:
     runs-on: ubuntu-latest
     steps:
-      - uses: "actions/checkout@v4"
-      - uses: "actions/setup-node@v3"
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v3
+
       - name: Install dependencies
         run: npm install
+
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v3
         with:

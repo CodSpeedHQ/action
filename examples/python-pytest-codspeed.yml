@@ -1,4 +1,4 @@
-name: codspeed-benchmarks
+name: CodSpeed
 
 on:
   push:
@@ -10,10 +10,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  benchmarks:
+  codspeed:
+    name: Run benchmarks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v3
         with:
           python-version: "3.9"

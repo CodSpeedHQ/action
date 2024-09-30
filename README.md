@@ -53,7 +53,7 @@ This workflow will run the benchmarks found in the `tests/` folder and upload th
 It will be triggered on every push to the `main` branch and on every pull request.
 
 ```yaml
-name: codspeed-benchmarks
+name: CodSpeed
 
 on:
   push:
@@ -66,6 +66,7 @@ on:
 
 jobs:
   benchmarks:
+    name: Run benchmarks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -90,7 +91,7 @@ This workflow will run the benchmarks found in the `tests/` folder and upload th
 It will be triggered on every push to the `main` branch and on every pull request.
 
 ```yml
-name: codspeed-benchmarks
+name: CodSpeed
 
 on:
   push:
@@ -102,6 +103,7 @@ on:
   workflow_dispatch:
 
 jobs:
+  name: Run benchmarks
   benchmarks:
     runs-on: ubuntu-latest
     steps:
@@ -131,7 +133,7 @@ This workflow will run the benchmarks defined with `vitest`'s `bench` function a
 It will be triggered on every push to the `main` branch and on every pull request.
 
 ```yml
-name: codspeed-benchmarks
+name: CodSpeed
 
 on:
   push:
@@ -144,12 +146,16 @@ on:
 
 jobs:
   benchmarks:
+    name: Run benchmarks
     runs-on: ubuntu-latest
     steps:
-      - uses: "actions/checkout@v4"
-      - uses: "actions/setup-node@v3"
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v3
+
       - name: Install dependencies
         run: npm install
+
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v3
         with:

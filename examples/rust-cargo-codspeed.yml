@@ -1,4 +1,4 @@
-name: codspeed-benchmarks
+name: CodSpeed
 
 on:
   push:
@@ -10,7 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  benchmarks:
+  codspeed:
+    name: Run benchmarks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
