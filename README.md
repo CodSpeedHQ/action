@@ -68,7 +68,7 @@ jobs:
   benchmarks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v3
         with:
           python-version: "3.9"
@@ -105,7 +105,7 @@ jobs:
   benchmarks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup rust toolchain, cache and cargo-codspeed binary
         uses: moonrepo/setup-rust@v0
@@ -146,7 +146,7 @@ jobs:
   benchmarks:
     runs-on: ubuntu-latest
     steps:
-      - uses: "actions/checkout@v3"
+      - uses: "actions/checkout@v4"
       - uses: "actions/setup-node@v3"
       - name: Install dependencies
         run: npm install
