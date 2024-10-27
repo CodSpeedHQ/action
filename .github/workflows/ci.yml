@@ -16,12 +16,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-20.04", "ubuntu-22.04"]
+        os:
+          - ubuntu-20.04
+          - ubuntu-22.04
+          - ubuntu-24.04
+          - ubuntu-latest
     runs-on: ${{ matrix.os }}
     env:
       CODSPEED_SKIP_UPLOAD: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Check basic action execution
         uses: ./
         with:
