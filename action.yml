@@ -41,6 +41,10 @@ inputs:
     description: "The version of the runner to use. Use 'latest' to automatically fetch the latest release version from GitHub, or specify a version like '3.5.0' or 'v3.5.0'."
     required: false
 
+  runner-branch:
+    description: "The branch version of the runner to use"
+    required: false
+
   instruments:
     description: |
       Comma separated list of instruments to enable. The following instruments are available:
@@ -98,7 +102,10 @@ runs:
         fi
 
         # Install the CodSpeedHQ/runner
-        if [ "$RUNNER_VERSION" = "latest" ]; then
+        if [ -n "${{ inputs.runner-branch }}" ]; then
+          source $HOME/.cargo/env
+          cargo install --git https://github.com/CodSpeedHQ/runner --branch "${{ inputs.runner-branch }}"
+        elif [ "$RUNNER_VERSION" = "latest" ]; then
           curl -fsSL http://github.com/CodSpeedHQ/runner/releases/latest/download/codspeed-runner-installer.sh | bash -s -- --quiet
         else
           head_status=$(curl -I -fsSL -w "%{http_code}" -o /dev/null https://github.com/CodSpeedHQ/runner/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh)
