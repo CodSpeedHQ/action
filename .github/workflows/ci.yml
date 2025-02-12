@@ -17,10 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-20.04
           - ubuntu-22.04
           - ubuntu-24.04
           - ubuntu-latest
+          - codspeedhq-arm64-ubuntu-22.04
+          - codspeedhq-arm64-ubuntu-24.04
+
     runs-on: ${{ matrix.os }}
     env:
       CODSPEED_SKIP_UPLOAD: true
