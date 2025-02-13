@@ -41,9 +41,11 @@ runs:
   using: "composite"
   steps:
     - shell: bash
+      env:
+        GH_MATRIX: "${{ toJson(matrix) }}"
+        GH_STRATEGY: "${{ toJson(strategy) }}"
       run: |
         # Configure and run codspeed-runner
-
         if [ -n "${{ inputs.runner-version }}" ]; then
           RUNNER_VERSION="${{ inputs.runner-version }}"
         else
