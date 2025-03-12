@@ -26,6 +26,18 @@ inputs:
     description: "The version of the runner to use"
     required: false
 
+  mode:
+    description: |
+      The mode to to run the benchmarks in. The following modes are available:
+      - `instrumentation` (default): Run the benchmarks with instrumentation enabled.
+      - `walltime`: Run the benchmarks with walltime enabled.
+
+      We strongly recommend not changing this mode unless you know what you are doing.
+
+      Using the `walltime` mode on traditional VMs/Hosted Runners will lead to inconsistent data. For the best results, we recommend using CodSpeed Hosted Macro Runners, which are fine-tuned for performance measurement consistency.
+      Check out the [Walltime Instrument Documentation](https://docs.codspeed.io/instruments/walltime/) for more details.
+    required: false
+
   instruments:
     description: |
       Comma separated list of instruments to enable. The following instruments are available:
@@ -62,6 +74,9 @@ runs:
         fi
         if [ -n "${{ inputs.upload-url }}" ]; then
           RUNNER_ARGS="$RUNNER_ARGS --upload-url=${{ inputs.upload-url }}"
+        fi
+        if [ -n "${{ inputs.mode }}" ]; then
+          RUNNER_ARGS="$RUNNER_ARGS --mode=${{ inputs.mode }}"
         fi
         if [ -n "${{ inputs.instruments }}" ]; then
           RUNNER_ARGS="$RUNNER_ARGS --instruments=${{ inputs.instruments }}"
