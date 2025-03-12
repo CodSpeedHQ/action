@@ -32,6 +32,17 @@ jobs:
         uses: ./
         with:
           run: echo "Working!"
+      - name: Check action execution with env variables
+        uses: ./
+        env:
+          MY_ENV_VAR: "Hello"
+        with:
+          run: |
+            output=$(echo "$MY_ENV_VAR")
+            if [ "$output" != "Hello" ]; then
+              echo "Assertion failed: Expected 'Hello' but got '$output'"
+              exit 1
+            fi
       - name: Check action in a custom directory
         uses: ./
         with:
