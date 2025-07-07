@@ -56,3 +56,22 @@ jobs:
             echo "Working";
             echo "with";
             echo "multiple lines";
+  test-version-formats:
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - "latest"
+          - "3.5.0"
+          - "v3.5.0"
+
+    runs-on: ubuntu-latest
+    env:
+      CODSPEED_SKIP_UPLOAD: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check action with version format ${{ matrix.version }}
+        uses: ./
+        with:
+          runner-version: ${{ matrix.version }}
+          run: echo "Testing version format ${{ matrix.version }}!"
