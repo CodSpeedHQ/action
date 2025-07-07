@@ -23,7 +23,7 @@ inputs:
     required: false
 
   runner-version:
-    description: "The version of the runner to use"
+    description: "The version of the runner to use. Use 'latest' to automatically fetch the latest release version from GitHub, or specify a version like '3.5.0' or 'v3.5.0'."
     required: false
 
   mode:
@@ -59,7 +59,14 @@ runs:
       run: |
         # Configure and run codspeed-runner
         if [ -n "${{ inputs.runner-version }}" ]; then
-          RUNNER_VERSION="${{ inputs.runner-version }}"
+          if [ "${{ inputs.runner-version }}" = "latest" ]; then
+            echo "Fetching latest release version from GitHub..."
+            RUNNER_VERSION=$(curl -fsSL https://api.github.com/repos/CodSpeedHQ/runner/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+            echo "Latest version found: $RUNNER_VERSION"
+          else
+            # Strip 'v' prefix if present to normalize version format
+            RUNNER_VERSION=$(echo "${{ inputs.runner-version }}" | sed 's/^v//')
+          fi
         else
           RUNNER_VERSION=$(cat $GITHUB_ACTION_PATH/.codspeed-runner-version)
         fi
