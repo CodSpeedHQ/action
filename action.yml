@@ -58,17 +58,12 @@ runs:
         GH_STRATEGY: "${{ toJson(strategy) }}"
       run: |
         # Configure and run codspeed-runner
-        if [ -n "${{ inputs.runner-version }}" ]; then
-          if [ "${{ inputs.runner-version }}" = "latest" ]; then
-            echo "Fetching latest release version from GitHub..."
-            RUNNER_VERSION=$(curl -fsSL https://api.github.com/repos/CodSpeedHQ/runner/releases/latest | jq -r '.tag_name' | sed 's/^v//')
-            echo "Latest version found: $RUNNER_VERSION"
-          else
-            # Strip 'v' prefix if present to normalize version format
-            RUNNER_VERSION=$(echo "${{ inputs.runner-version }}" | sed 's/^v//')
-          fi
-        else
+        RUNNER_VERSION="${{ inputs.runner-version }}"
+        if [ -z "$RUNNER_VERSION" ]; then
           RUNNER_VERSION=$(cat $GITHUB_ACTION_PATH/.codspeed-runner-version)
+        elif [ "$RUNNER_VERSION" != "latest" ]; then
+          # Strip 'v' prefix if present to normalize version format
+          RUNNER_VERSION=$(echo "$RUNNER_VERSION" | sed 's/^v//')
         fi
 
         # Get the runner arguments
@@ -93,12 +88,16 @@ runs:
         fi
 
         # Install the CodSpeedHQ/runner
-        head_status=$(curl -I -fsSL -w "%{http_code}" -o /dev/null https://github.com/CodSpeedHQ/runner/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh)
-        if [ "$head_status" -eq 404 ]; then
-          echo "Error: Version $RUNNER_VERSION is not available in https://github.com/CodSpeedHQ/runner/releases, please a correct version."
-          exit 1
+        if [ "$RUNNER_VERSION" = "latest" ]; then
+          curl -fsSL http://github.com/CodSpeedHQ/runner/releases/latest/download/codspeed-runner-installer.sh | bash -s -- --quiet
         else
-          curl -fsSL https://github.com/CodSpeedHQ/runner/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh | bash -s -- --quiet
+          head_status=$(curl -I -fsSL -w "%{http_code}" -o /dev/null https://github.com/CodSpeedHQ/runner/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh)
+          if [ "$head_status" -eq 404 ]; then
+            echo "Error: Version $RUNNER_VERSION is not available in https://github.com/CodSpeedHQ/runner/releases, please a correct version."
+            exit 1
+          else
+            curl -fsSL https://github.com/CodSpeedHQ/runner/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh | bash -s -- --quiet
+          fi
         fi
 
         # Run the benchmarks
