@@ -6,36 +6,39 @@ branding:
 
 author: "Arthur Pastel"
 inputs:
-  token:
-    description: "CodSpeed upload token"
-    required: false
   run:
     description: "The command to run the benchmarks"
     required: true
+
+  mode:
+    description: |
+      The mode to to run the benchmarks in. The following modes are available:
+      - `instrumentation`: Run the benchmarks with CPU instrumentation measurements.
+      - `walltime`: Run the benchmarks with walltime measurement.
+
+      We strongly recommend starting with the `instrumentation` mode.
+
+      Using the `walltime` mode on traditional VMs/Hosted Runners might lead to inconsistent data. For the best results, we recommend using CodSpeed Hosted Macro Runners, which are fine-tuned for performance measurement consistency.
+      Check out the [Walltime Instrument Documentation](https://docs.codspeed.io/instruments/walltime/) for more details.
+    required: true
+
+  token:
+    description: |
+      CodSpeed upload token. Only required for private repositories.
+    required: false
 
   working-directory:
     description: |
       The directory where the `run` command will be executed.
       Warning: if you use defaults.working-directory, you must still set this parameter.
     required: false
+
   upload-url:
     description: "The upload endpoint (for on-premise deployments)"
     required: false
 
   runner-version:
     description: "The version of the runner to use. Use 'latest' to automatically fetch the latest release version from GitHub, or specify a version like '3.5.0' or 'v3.5.0'."
-    required: false
-
-  mode:
-    description: |
-      The mode to to run the benchmarks in. The following modes are available:
-      - `instrumentation` (default): Run the benchmarks with instrumentation enabled.
-      - `walltime`: Run the benchmarks with walltime enabled.
-
-      We strongly recommend not changing this mode unless you know what you are doing.
-
-      Using the `walltime` mode on traditional VMs/Hosted Runners will lead to inconsistent data. For the best results, we recommend using CodSpeed Hosted Macro Runners, which are fine-tuned for performance measurement consistency.
-      Check out the [Walltime Instrument Documentation](https://docs.codspeed.io/instruments/walltime/) for more details.
     required: false
 
   instruments:
@@ -57,6 +60,12 @@ runs:
         GH_MATRIX: "${{ toJson(matrix) }}"
         GH_STRATEGY: "${{ toJson(strategy) }}"
       run: |
+        # Validate required inputs (custom message for smoother v4 migration)
+        if [ -z "${{ inputs.mode }}" ]; then
+          echo "::error title=Missing required input 'mode'::The 'mode' input is required as of CodSpeed Action v4. Please explicitly set 'mode' to 'instrumentation' or 'walltime'. Before, this variable was automatically set to instrumentation on every runner except for CodSpeed macro runners where it was set to walltime by default. See https://codspeed.io/docs/instruments for details."
+          exit 1
+        fi
+
         # Configure and run codspeed-runner
         RUNNER_VERSION="${{ inputs.runner-version }}"
         if [ -z "$RUNNER_VERSION" ]; then

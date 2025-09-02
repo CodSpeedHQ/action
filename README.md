@@ -12,17 +12,22 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
 # Usage
 
 ```yaml
-- uses: CodSpeedHQ/action@v3
+- uses: CodSpeedHQ/action@v4
   with:
+    # [REQUIRED]
+    # The command used to run your CodSpeed benchmarks
+    run: "<YOUR_COMMAND>"
+
+    # [REQUIRED]
+    # The measurement mode to use, either: "instrumentation" or "walltime".
+    # More details on the instruments at https://docs.codspeed.io/instruments/
+    mode: "instrumentation"
+
     # [REQUIRED for private repositories]
     # The CodSpeed upload token: can be found at https://codspeed.io/<org>/<repo>/settings
     # It's strongly recommended to use a secret for this value
     # If you're instrumenting a public repository, you can omit this value
     token: ""
-
-    # [REQUIRED]
-    # The command used to run your codspeed benchmarks
-    run: ""
 
     # [OPTIONAL]
     # The directory where the `run` command will be executed.
@@ -78,8 +83,9 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v3
+        uses: CodSpeedHQ/action@v4
         with:
+          mode: instrumentation
           token: ${{ secrets.CODSPEED_TOKEN }}
           run: pytest tests/ --codspeed
 ```
@@ -120,8 +126,9 @@ jobs:
         run: cargo codspeed build
 
       - name: Run the benchmarks
-        uses: CodSpeedHQ/action@v3
+        uses: CodSpeedHQ/action@v4
         with:
+          mode: instrumentation
           run: cargo codspeed run
           token: ${{ secrets.CODSPEED_TOKEN }}
 ```
@@ -157,8 +164,9 @@ jobs:
         run: npm install
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v3
+        uses: CodSpeedHQ/action@v4
         with:
+          mode: instrumentation
           run: npx vitest bench
           token: ${{ secrets.CODSPEED_TOKEN }}
 ```
