@@ -22,6 +22,9 @@ jobs:
           - ubuntu-latest
           - codspeedhq-arm64-ubuntu-22.04
           - codspeedhq-arm64-ubuntu-24.04
+        mode:
+          - instrumentation
+          - walltime
 
     runs-on: ${{ matrix.os }}
     env:
@@ -31,12 +34,14 @@ jobs:
       - name: Check basic action execution
         uses: ./
         with:
+          mode: ${{ matrix.mode }}
           run: echo "Working!"
       - name: Check action execution with env variables
         uses: ./
         env:
           MY_ENV_VAR: "Hello"
         with:
+          mode: ${{ matrix.mode }}
           run: |
             output=$(echo "$MY_ENV_VAR")
             if [ "$output" != "Hello" ]; then
@@ -46,12 +51,14 @@ jobs:
       - name: Check action in a custom directory
         uses: ./
         with:
+          mode: ${{ matrix.mode }}
           working-directory: examples
           # Check that the directory is actually changed
           run: if [ $(basename $(pwd)) != "examples" ]; then exit 1; fi
       - name: Check action with multiline command
         uses: ./
         with:
+          mode: ${{ matrix.mode }}
           run: |
             echo "Working";
             echo "with";
@@ -74,4 +81,5 @@ jobs:
         uses: ./
         with:
           runner-version: ${{ matrix.version }}
+          mode: instrumentation
           run: echo "Testing version format ${{ matrix.version }}!"
