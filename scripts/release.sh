@@ -35,5 +35,6 @@ git push -f origin tag v$MAJOR_VERSION
 git push --follow-tags
 
 RUNNER_NOTES=$(gh release view v$NEW_VERSION -R CodSpeedHQ/runner --json body | jq -r .body)
-RUNNER_NOTES="$RUNNER_NOTES\n\nFull Runner Changelog: https://github.com/CodSpeedHQ/runner/blob/main/CHANGELOG.md"
+RUNNER_NOTES="$RUNNER_NOTES
+**Full Runner Changelog**: https://github.com/CodSpeedHQ/runner/blob/main/CHANGELOG.md"
 gh release create v$NEW_VERSION --title "v$NEW_VERSION" --notes "$RUNNER_NOTES" -d
