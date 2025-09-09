@@ -60,7 +60,8 @@ runs:
         GH_MATRIX: "${{ toJson(matrix) }}"
         GH_STRATEGY: "${{ toJson(strategy) }}"
       run: |
-        # Validate required inputs (custom message for smoother v4 migration)
+        # Validate required inputs
+        # (custom message for smoother v4 migration)
         if [ -z "${{ inputs.mode }}" ]; then
           echo "::error title=Missing required input 'mode'::The 'mode' input is required as of CodSpeed Action v4. Please explicitly set 'mode' to 'instrumentation' or 'walltime'. Before, this variable was automatically set to instrumentation on every runner except for CodSpeed macro runners where it was set to walltime by default. See https://codspeed.io/docs/instruments for details."
           exit 1
