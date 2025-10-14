@@ -46,15 +46,28 @@ inputs:
       Comma separated list of instruments to enable. The following instruments are available:
       - `mongodb`: MongoDB instrumentation, requires the MongoDB instrument to be enabled for the organization in CodSpeed
     required: false
+
   mongo-uri-env-name:
     description: |
       The name of the environment variable containing the MongoDB URI. Requires the `mongodb` instrument to be activated in `instruments`.
       If the instrumentation is enabled and this value is not set, the user will need to dynamically provide the MongoDB URI to the CodSpeed runner.
     required: false
 
+  instruments-cache-dir:
+    description: |
+      The directory to use for caching installations of instruments (like valgrind or perf). Defaults to `$HOME/.cache/codspeed-action`.
+    required: false
+    default: "~/.cache/codspeed-action"
+
 runs:
   using: "composite"
   steps:
+    - name: Cache CodSpeed instruments
+      uses: actions/cache@v4
+      with:
+        path: ${{ inputs.instruments-cache-dir }}
+        key: codspeed-instruments-${{ runner.os }}-${{ runner.arch }}
+
     - shell: bash
       env:
         GH_MATRIX: "${{ toJson(matrix) }}"
@@ -134,6 +147,9 @@ runs:
         fi
         if [ -n "${{ inputs.mongo-uri-env-name }}" ]; then
           RUNNER_ARGS="$RUNNER_ARGS --mongo-uri-env-name=${{ inputs.mongo-uri-env-name }}"
+        fi
+        if [ -n "${{ inputs.instruments-cache-dir }}" ]; then
+          RUNNER_ARGS="$RUNNER_ARGS --setup-cache-dir=${{ inputs.instruments-cache-dir }}"
         fi
 
         # Run the benchmarks
