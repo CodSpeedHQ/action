@@ -38,7 +38,7 @@ inputs:
     required: false
 
   runner-version:
-    description: "The version of the runner to use. Use 'latest' to automatically fetch the latest release version from GitHub, or specify a version like '3.5.0' or 'v3.5.0'. For debugging: 'branch:branch-name' or 'ref:commit-sha'."
+    description: "The version of the runner to use. Use 'latest' to automatically fetch the latest release version from GitHub, or specify a version like '3.5.0' or 'v3.5.0'."
     required: false
 
   instruments:
@@ -68,12 +68,28 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Determine runner and kernel version
+      id: versions
+      shell: bash
+      run: |
+        RUNNER_VERSION="${{ inputs.runner-version }}"
+        if [ -z "$RUNNER_VERSION" ]; then
+          RUNNER_VERSION=$(cat $GITHUB_ACTION_PATH/.codspeed-runner-version)
+        fi
+        echo "runner-version=$RUNNER_VERSION" >> $GITHUB_OUTPUT
+
+        # Get kernel version for cache key
+        KERNEL_VERSION=$(uname -r)
+        echo "kernel-version=$KERNEL_VERSION" >> $GITHUB_OUTPUT
+
     - name: Cache CodSpeed instruments
       if: inputs.cache-instruments == 'true'
       uses: actions/cache@v4
       with:
         path: ${{ inputs.instruments-cache-dir }}
-        key: codspeed-instruments-${{ runner.os }}-${{ runner.arch }}
+        key: codspeed-instruments-${{ runner.os }}-${{ runner.arch }}-${{steps.versions.outputs.kernel-version }}-${{ steps.versions.outputs.runner-version }}
+        restore-keys: |
+          codspeed-instruments-${{ runner.os }}-${{ runner.arch }}-${{steps.versions.outputs.kernel-version }}-
 
     - shell: bash
       env:
@@ -88,12 +104,9 @@ runs:
         fi
 
         # Configure and run codspeed-runner
-        RUNNER_VERSION="${{ inputs.runner-version }}"
-        if [ -z "$RUNNER_VERSION" ]; then
-          RUNNER_VERSION=$(cat $GITHUB_ACTION_PATH/.codspeed-runner-version)
-        fi
+        RUNNER_VERSION="${{ steps.versions.outputs.runner-version }}"
 
-        # Detect version type (priority: latest > version number > branch/ref prefixes)
+        # Detect version type (priority: latest > version number > branch/rev prefixes)
         if [ "$RUNNER_VERSION" = "latest" ]; then
           VERSION_TYPE="latest"
         elif echo "$RUNNER_VERSION" | grep -qE '^v?[0-9]+\.[0-9]+\.[0-9]+'; then
@@ -104,9 +117,9 @@ runs:
         elif echo "$RUNNER_VERSION" | grep -q '^branch:'; then
           VERSION_TYPE="branch"
           RUNNER_VERSION=$(echo "$RUNNER_VERSION" | sed 's/^branch://')
-        elif echo "$RUNNER_VERSION" | grep -q '^ref:'; then
-          VERSION_TYPE="ref"
-          RUNNER_VERSION=$(echo "$RUNNER_VERSION" | sed 's/^ref://')
+        elif echo "$RUNNER_VERSION" | grep -q '^rev:'; then
+          VERSION_TYPE="rev"
+          RUNNER_VERSION=$(echo "$RUNNER_VERSION" | sed 's/^rev://')
         else
           # Default to release version
           VERSION_TYPE="release"
@@ -120,8 +133,8 @@ runs:
           # Install from specific branch using cargo
           source $HOME/.cargo/env
           cargo install --git https://github.com/CodSpeedHQ/runner --branch "$RUNNER_VERSION"
-        elif [ "$VERSION_TYPE" = "ref" ]; then
-          # Install from specific commit/ref using cargo
+        elif [ "$VERSION_TYPE" = "rev" ]; then
+          # Install from specific commit/rev using cargo
           source $HOME/.cargo/env
           cargo install --git https://github.com/CodSpeedHQ/runner --rev "$RUNNER_VERSION"
         else
