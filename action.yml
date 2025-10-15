@@ -53,6 +53,12 @@ inputs:
       If the instrumentation is enabled and this value is not set, the user will need to dynamically provide the MongoDB URI to the CodSpeed runner.
     required: false
 
+  cache-instruments:
+    description: |
+      Enable caching of instrument installations (like valgrind or perf) to speed up subsequent workflow runs. Set to 'false' to disable caching.
+    required: false
+    default: "true"
+
   instruments-cache-dir:
     description: |
       The directory to use for caching installations of instruments (like valgrind or perf). Defaults to `$HOME/.cache/codspeed-action`.
@@ -63,6 +69,7 @@ runs:
   using: "composite"
   steps:
     - name: Cache CodSpeed instruments
+      if: inputs.cache-instruments == 'true'
       uses: actions/cache@v4
       with:
         path: ${{ inputs.instruments-cache-dir }}
@@ -148,7 +155,7 @@ runs:
         if [ -n "${{ inputs.mongo-uri-env-name }}" ]; then
           RUNNER_ARGS="$RUNNER_ARGS --mongo-uri-env-name=${{ inputs.mongo-uri-env-name }}"
         fi
-        if [ -n "${{ inputs.instruments-cache-dir }}" ]; then
+        if [ "${{ inputs.cache-instruments }}" = "true" ] && [ -n "${{ inputs.instruments-cache-dir }}" ]; then
           RUNNER_ARGS="$RUNNER_ARGS --setup-cache-dir=${{ inputs.instruments-cache-dir }}"
         fi
 

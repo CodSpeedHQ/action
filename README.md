@@ -45,6 +45,11 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     mongo_uri_env_name: ""
 
     # [OPTIONAL]
+    # Enable caching of instrument installations (like valgrind or perf) to speed up
+    # subsequent workflow runs. Set to 'false' to disable caching. Defaults to 'true'.
+    cache-instruments: "true"
+
+    # [OPTIONAL]
     # The directory to use for caching installations of instruments (like valgrind or perf).
     # This will speed up subsequent workflow runs by reusing previously installed instruments.
     # Defaults to $HOME/.cache/codspeed-action if not specified.
