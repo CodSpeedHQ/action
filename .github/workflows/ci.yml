@@ -69,8 +69,8 @@ jobs:
       matrix:
         version:
           - "latest"
-          - "3.5.0"
-          - "v3.5.0"
+          - "4.2.0"
+          - "v4.2.0"
 
     runs-on: ubuntu-latest
     env:
