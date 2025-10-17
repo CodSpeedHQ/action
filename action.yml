@@ -84,7 +84,7 @@ runs:
 
     - name: Cache CodSpeed instruments
       if: inputs.cache-instruments == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
         path: ${{ inputs.instruments-cache-dir }}
         key: codspeed-instruments-${{ runner.os }}-${{ runner.arch }}-${{steps.versions.outputs.kernel-version }}-${{ steps.versions.outputs.runner-version }}
