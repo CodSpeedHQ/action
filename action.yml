@@ -87,9 +87,9 @@ runs:
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
         path: ${{ inputs.instruments-cache-dir }}
-        key: codspeed-instruments-${{ runner.os }}-${{ runner.arch }}-${{steps.versions.outputs.kernel-version }}-${{ steps.versions.outputs.runner-version }}
+        key: codspeed-instruments-${{ inputs.mode }}-${{ runner.os }}-${{ runner.arch }}-${{steps.versions.outputs.kernel-version }}-${{ steps.versions.outputs.runner-version }}
         restore-keys: |
-          codspeed-instruments-${{ runner.os }}-${{ runner.arch }}-${{steps.versions.outputs.kernel-version }}-
+          codspeed-instruments-${{ inputs.mode }}-${{ runner.os }}-${{ runner.arch }}-${{steps.versions.outputs.kernel-version }}-
 
     - shell: bash
       env:
