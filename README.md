@@ -19,9 +19,9 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     run: "<YOUR_COMMAND>"
 
     # [REQUIRED]
-    # The measurement mode to use, either: "instrumentation" or "walltime".
+    # The measurement mode to use: "simulation" (recommended), or "walltime".
     # More details on the instruments at https://docs.codspeed.io/instruments/
-    mode: "instrumentation"
+    mode: "simulation"
 
     # [OPTIONAL]
     # CodSpeed recommends using OpenID Connect (OIDC) for authentication.
@@ -105,7 +105,7 @@ jobs:
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v4
         with:
-          mode: instrumentation
+          mode: simulation
           run: pytest tests/ --codspeed
 ```
 
@@ -150,7 +150,7 @@ jobs:
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v4
         with:
-          mode: instrumentation
+          mode: simulation
           run: cargo codspeed run
 ```
 
@@ -190,6 +190,6 @@ jobs:
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v4
         with:
-          mode: instrumentation
+          mode: simulation
           run: npx vitest bench
 ```

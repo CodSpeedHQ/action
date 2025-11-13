@@ -12,11 +12,12 @@ inputs:
 
   mode:
     description: |
-      The mode to to run the benchmarks in. The following modes are available:
-      - `instrumentation`: Run the benchmarks with CPU instrumentation measurements.
+      The mode to run the benchmarks in. The following modes are available:
+      - `simulation`: Run the benchmarks with CPU simulation measurements.
       - `walltime`: Run the benchmarks with walltime measurement.
+      - `instrumentation`: (Deprecated) Legacy name for `simulation`. Please use `simulation` instead.
 
-      We strongly recommend starting with the `instrumentation` mode.
+      We strongly recommend starting with the `simulation` mode.
 
       Using the `walltime` mode on traditional VMs/Hosted Runners might lead to inconsistent data. For the best results, we recommend using CodSpeed Hosted Macro Runners, which are fine-tuned for performance measurement consistency.
       Check out the [Walltime Instrument Documentation](https://docs.codspeed.io/instruments/walltime/) for more details.
@@ -99,7 +100,7 @@ runs:
         # Validate required inputs
         # (custom message for smoother v4 migration)
         if [ -z "${{ inputs.mode }}" ]; then
-          echo "::error title=Missing required input 'mode'::The 'mode' input is required as of CodSpeed Action v4. Please explicitly set 'mode' to 'instrumentation' or 'walltime'. Before, this variable was automatically set to instrumentation on every runner except for CodSpeed macro runners where it was set to walltime by default. See https://codspeed.io/docs/instruments for details."
+          echo "::error title=Missing required input 'mode'::The 'mode' input is required as of CodSpeed Action v4. Please explicitly set 'mode' to 'simulation' or 'walltime'. Before, this variable was automatically set to instrumentation on every runner except for CodSpeed macro runners where it was set to walltime by default. See https://codspeed.io/docs/instruments for details."
           exit 1
         fi
 

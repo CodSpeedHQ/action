@@ -27,5 +27,5 @@ jobs:
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v4
         with:
-          mode: instrumentation
+          mode: simulation
           run: node -r esbuild-register benches/bench.ts
