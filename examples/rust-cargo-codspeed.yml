@@ -13,6 +13,9 @@ jobs:
   codspeed:
     name: Run benchmarks
     runs-on: ubuntu-latest
+    permissions: # optional for public repositories
+      contents: read
+      id-token: write # for OpenID Connect authentication with CodSpeed
     steps:
       - uses: actions/checkout@v4
 
@@ -31,4 +34,3 @@ jobs:
         with:
           mode: instrumentation
           run: cargo codspeed run
-          token: ${{ secrets.CODSPEED_TOKEN }}
