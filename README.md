@@ -23,10 +23,16 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     # More details on the instruments at https://docs.codspeed.io/instruments/
     mode: "instrumentation"
 
-    # [REQUIRED for private repositories]
-    # The CodSpeed upload token: can be found at https://codspeed.io/<org>/<repo>/settings
+    # [OPTIONAL]
+    # CodSpeed recommends using OpenID Connect (OIDC) for authentication.
+    #
+    # If you are not using OpenID Connect, set the CodSpeed upload token
+    # that can be found at https://codspeed.io/<org>/<repo>/settings
     # It's strongly recommended to use a secret for this value
-    # If you're instrumenting a public repository, you can omit this value
+    # If you're instrumenting a public repository, you can omit this value altogether
+    #
+    # More information in the CodSpeed documentation:
+    # https://codspeed.io/docs/integrations/ci/github-actions#authentication
     token: ""
 
     # [OPTIONAL]
@@ -84,6 +90,9 @@ jobs:
   benchmarks:
     name: Run benchmarks
     runs-on: ubuntu-latest
+    permissions: # optional for public repositories
+      contents: read
+      id-token: write # for OpenID Connect authentication with CodSpeed
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v3
@@ -97,7 +106,6 @@ jobs:
         uses: CodSpeedHQ/action@v4
         with:
           mode: instrumentation
-          token: ${{ secrets.CODSPEED_TOKEN }}
           run: pytest tests/ --codspeed
 ```
 
@@ -123,6 +131,9 @@ jobs:
   name: Run benchmarks
   benchmarks:
     runs-on: ubuntu-latest
+    permissions: # optional for public repositories
+      contents: read
+      id-token: write # for OpenID Connect authentication with CodSpeed
     steps:
       - uses: actions/checkout@v4
 
@@ -141,7 +152,6 @@ jobs:
         with:
           mode: instrumentation
           run: cargo codspeed run
-          token: ${{ secrets.CODSPEED_TOKEN }}
 ```
 
 ## Node.js with `codspeed-node`, TypeScript and `vitest`
@@ -166,6 +176,9 @@ jobs:
   benchmarks:
     name: Run benchmarks
     runs-on: ubuntu-latest
+    permissions: # optional for public repositories
+      contents: read
+      id-token: write # for OpenID Connect authentication with CodSpeed
     steps:
       - uses: actions/checkout@v4
 
@@ -179,5 +192,4 @@ jobs:
         with:
           mode: instrumentation
           run: npx vitest bench
-          token: ${{ secrets.CODSPEED_TOKEN }}
 ```
