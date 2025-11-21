@@ -66,6 +66,12 @@ inputs:
     required: false
     default: "~/.cache/codspeed-action"
 
+  allow-empty:
+    description: |
+      Allow the action to complete successfully even if no benchmarks were found or run. Set to 'true' to enable this behavior.
+    required: false
+    default: "false"
+
 runs:
   using: "composite"
   steps:
@@ -171,6 +177,9 @@ runs:
         fi
         if [ "${{ inputs.cache-instruments }}" = "true" ] && [ -n "${{ inputs.instruments-cache-dir }}" ]; then
           RUNNER_ARGS="$RUNNER_ARGS --setup-cache-dir=${{ inputs.instruments-cache-dir }}"
+        fi
+        if [ -n "${{ inputs.allow-empty }}" ]; then
+          RUNNER_ARGS="$RUNNER_ARGS --allow-empty"
         fi
 
         # Run the benchmarks
