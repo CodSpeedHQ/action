@@ -20,13 +20,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - name: Build C++ benchmarks
+        run: |
+          mkdir -p build && cd build
+          cmake -DCODSPEED_MODE=simulation ..
+          make -j
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run benchmarks
+      - name: Run C++ benchmarks
         uses: CodSpeedHQ/action@v4
         with:
           mode: simulation
-          run: node -r esbuild-register benches/bench.ts
+          run: ./path/to/built/benchmark

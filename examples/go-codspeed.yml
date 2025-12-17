@@ -16,17 +16,17 @@ permissions: # optional for public repositories
 jobs:
   codspeed:
     name: Run benchmarks
-    runs-on: ubuntu-latest
+    runs-on: codspeed-macro
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run benchmarks
-        uses: CodSpeedHQ/action@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          mode: simulation
-          run: node -r esbuild-register benches/bench.ts
+          go-version: stable
+
+      - name: Run Go benchmarks
+        uses: CodSpeedHQ/action@main
+        with:
+          mode: walltime # go only supports walltime mode
+          run: go test -bench=. -benchtime=5s
