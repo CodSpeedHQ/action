@@ -139,11 +139,11 @@ runs:
         elif [ "$VERSION_TYPE" = "branch" ]; then
           # Install from specific branch using cargo
           source $HOME/.cargo/env
-          cargo install --locked --git https://github.com/CodSpeedHQ/runner --branch "$RUNNER_VERSION"
+          cargo install --locked --git https://github.com/CodSpeedHQ/runner --branch "$RUNNER_VERSION" codspeed-runner
         elif [ "$VERSION_TYPE" = "rev" ]; then
           # Install from specific commit/rev using cargo
           source $HOME/.cargo/env
-          cargo install --locked --git https://github.com/CodSpeedHQ/runner --rev "$RUNNER_VERSION"
+          cargo install --locked --git https://github.com/CodSpeedHQ/runner --rev "$RUNNER_VERSION" codspeed-runner
         else
           # Release version
           head_status=$(curl -I -fsSL -w "%{http_code}" -o /dev/null https://github.com/CodSpeedHQ/runner/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh)
