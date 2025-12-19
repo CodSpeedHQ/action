@@ -178,7 +178,7 @@ runs:
         if [ "${{ inputs.cache-instruments }}" = "true" ] && [ -n "${{ inputs.instruments-cache-dir }}" ]; then
           RUNNER_ARGS="$RUNNER_ARGS --setup-cache-dir=${{ inputs.instruments-cache-dir }}"
         fi
-        if [ -n "${{ inputs.allow-empty }}" ]; then
+        if [ "${{ inputs.allow-empty }}" = "true" ]; then
           RUNNER_ARGS="$RUNNER_ARGS --allow-empty"
         fi
 
