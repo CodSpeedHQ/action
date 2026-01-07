@@ -15,6 +15,7 @@ inputs:
       The mode to run the benchmarks in. The following modes are available:
       - `simulation`: Run the benchmarks with CPU simulation measurements.
       - `walltime`: Run the benchmarks with walltime measurement.
+      - `memory`: Run the benchmarks with allocation measurements.
       - `instrumentation`: (Deprecated) Legacy name for `simulation`. Please use `simulation` instead.
 
       We strongly recommend starting with the `simulation` mode.
