@@ -1,5 +1,5 @@
 # Changelog
 
-This project is kept in sync with the [CodSpeedHQ/runner](https://github.com/CodSpeedHQ/runner) project.
+This project is kept in sync with the [CodSpeedHQ/codspeed](https://github.com/CodSpeedHQ/codspeed) project.
 
-Checkout the [CodSpeedHQ/runner Changelog](https://github.com/CodSpeedHQ/runner/blob/main/CHANGELOG.md) for more details.
+Checkout the [CodSpeedHQ/codspeed Changelog](https://github.com/CodSpeedHQ/codspeed/blob/main/CHANGELOG.md) for more details.

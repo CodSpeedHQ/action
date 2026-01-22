@@ -134,25 +134,25 @@ runs:
           RUNNER_VERSION=$(echo "$RUNNER_VERSION" | sed 's/^v//')
         fi
 
-        # Install the CodSpeedHQ/runner
+        # Install the runner
         if [ "$VERSION_TYPE" = "latest" ]; then
-          curl -fsSL http://github.com/CodSpeedHQ/runner/releases/latest/download/codspeed-runner-installer.sh | bash -s -- --quiet
+          curl -fsSL http://github.com/CodSpeedHQ/codspeed/releases/latest/download/codspeed-runner-installer.sh | bash -s -- --quiet
         elif [ "$VERSION_TYPE" = "branch" ]; then
           # Install from specific branch using cargo
           source $HOME/.cargo/env
-          cargo install --locked --git https://github.com/CodSpeedHQ/runner --branch "$RUNNER_VERSION" codspeed-runner
+          cargo install --locked --git https://github.com/CodSpeedHQ/codspeed --branch "$RUNNER_VERSION" codspeed-runner
         elif [ "$VERSION_TYPE" = "rev" ]; then
           # Install from specific commit/rev using cargo
           source $HOME/.cargo/env
-          cargo install --locked --git https://github.com/CodSpeedHQ/runner --rev "$RUNNER_VERSION" codspeed-runner
+          cargo install --locked --git https://github.com/CodSpeedHQ/codspeed --rev "$RUNNER_VERSION" codspeed-runner
         else
           # Release version
-          head_status=$(curl -I -fsSL -w "%{http_code}" -o /dev/null https://github.com/CodSpeedHQ/runner/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh)
+          head_status=$(curl -I -fsSL -w "%{http_code}" -o /dev/null https://github.com/CodSpeedHQ/codspeed/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh)
           if [ "$head_status" -eq 404 ]; then
-            echo "Error: Version $RUNNER_VERSION is not available in https://github.com/CodSpeedHQ/runner/releases, please a correct version."
+            echo "Error: Version $RUNNER_VERSION is not available in https://github.com/CodSpeedHQ/codspeed/releases, please a correct version."
             exit 1
           else
-            curl -fsSL https://github.com/CodSpeedHQ/runner/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh | bash -s -- --quiet
+            curl -fsSL https://github.com/CodSpeedHQ/codspeed/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh | bash -s -- --quiet
           fi
         fi
 

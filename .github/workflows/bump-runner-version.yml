@@ -27,9 +27,9 @@ jobs:
               echo "Invalid version"
               exit 1
           fi
-          # Check that this release exists in the CodSpeedHQ/runner repository
-          if ! gh release view v${{ github.event.inputs.version }} -R CodSpeedHQ/runner; then
-            echo "Release ${{ github.event.inputs.version }} does not exist in CodSpeedHQ/runner"
+          # Check that this release exists in the CodSpeedHQ/codspeed repository
+          if ! gh release view v${{ github.event.inputs.version }} -R CodSpeedHQ/codspeed; then
+            echo "Release ${{ github.event.inputs.version }} does not exist in CodSpeedHQ/codspeed"
             exit 1
           fi
 
