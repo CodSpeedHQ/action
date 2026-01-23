@@ -64,6 +64,10 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     # [OPTIONAL]
     # A custom upload url, only if you are using an on premise CodSpeed instance
     upload-url: ""
+
+    # [OPTIONAL]
+    # The version of the go-runner to use (e.g., 1.0.0, 1.0.0-beta.1). If not specified, the latest version will be installed
+    go-runner-version: ""
 ```
 
 # Example usage

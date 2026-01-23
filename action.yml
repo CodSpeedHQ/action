@@ -73,6 +73,10 @@ inputs:
     required: false
     default: "false"
 
+  go-runner-version:
+    description: "The version of the go-runner to use (e.g., 1.0.0, 1.0.0-beta.1). If not specified, the latest version will be installed"
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -181,6 +185,9 @@ runs:
         fi
         if [ "${{ inputs.allow-empty }}" = "true" ]; then
           RUNNER_ARGS="$RUNNER_ARGS --allow-empty"
+        fi
+        if [ -n "${{ inputs.go-runner-version }}" ]; then
+          RUNNER_ARGS="$RUNNER_ARGS --go-runner-version=${{ inputs.go-runner-version }}"
         fi
 
         # Run the benchmarks

@@ -68,7 +68,8 @@ jobs:
             echo "Working";
             echo "with";
             echo "multiple lines";
-  test-version-formats:
+
+  test-runner-version-formats:
     strategy:
       fail-fast: false
       matrix:
@@ -88,4 +89,25 @@ jobs:
           allow-empty: true
           runner-version: ${{ matrix.version }}
           mode: simulation
+          run: echo "Testing version format ${{ matrix.version }}!"
+
+  test-go-runner-version-formats:
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - "1.0.0"
+          - "1.0.0-beta.1"
+
+    runs-on: ubuntu-latest
+    env:
+      CODSPEED_SKIP_UPLOAD: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check action with version format ${{ matrix.version }}
+        uses: ./
+        with:
+          allow-empty: true
+          go-runner-version: ${{ matrix.version }}
+          mode: walltime
           run: echo "Testing version format ${{ matrix.version }}!"
