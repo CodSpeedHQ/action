@@ -45,6 +45,11 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     working-directory: ""
 
     # [OPTIONAL]
+    # Path to a CodSpeed configuration file (codspeed.yml).
+    # If not specified, the runner will look for a codspeed.yml file in the repository root.
+    config: ""
+
+    # [OPTIONAL]
     # Comma-separated list of instruments to enable. Possible values: mongodb.
     instruments: ""
 

@@ -77,6 +77,10 @@ inputs:
     description: "The version of the go-runner to use (e.g., 1.0.0, 1.0.0-beta.1). If not specified, the latest version will be installed"
     required: false
 
+  config:
+    description: "Path to a CodSpeed configuration file (codspeed.yml). If not specified, the runner will look for a codspeed.yml file in the repository root."
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -190,6 +194,9 @@ runs:
         fi
         if [ -n "${{ inputs.go-runner-version }}" ]; then
           RUNNER_ARGS="$RUNNER_ARGS --go-runner-version=${{ inputs.go-runner-version }}"
+        fi
+        if [ -n "${{ inputs.config }}" ]; then
+          RUNNER_ARGS="$RUNNER_ARGS --config=${{ inputs.config }}"
         fi
 
         # Run the benchmarks
