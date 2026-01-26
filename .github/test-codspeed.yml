@@ -1,0 +1,5 @@
+benchmarks:
+  - name: "test"
+    exec: echo "Working!"
+  - name: "test2"
+    exec: echo "Also working!"

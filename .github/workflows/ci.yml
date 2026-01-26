@@ -113,3 +113,16 @@ jobs:
           go-runner-version: ${{ matrix.version }}
           mode: walltime
           run: echo "Testing version format ${{ matrix.version }}!"
+
+  test-config-file:
+    runs-on: ubuntu-latest
+    env:
+      CODSPEED_SKIP_UPLOAD: true
+    steps:
+      - uses: actions/checkout@v4
+      - run: cat .github/test-codspeed.yml
+      - name: Check action with config file (no run input)
+        uses: ./
+        with:
+          mode: memory
+          config: .github/test-codspeed.yml
