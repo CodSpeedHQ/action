@@ -14,8 +14,12 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
 ```yaml
 - uses: CodSpeedHQ/action@v4
   with:
-    # [REQUIRED]
+    # [OPTIONAL]
     # The command used to run your CodSpeed benchmarks
+    #
+    # Leave empty to use targets defined in your project configuration (e.g `codspeed.yml`)
+    # https://codspeed.io/docs/cli#configuration
+    # ⚠️ WARNING: for action/runner versions lower than v4.9.0, this parameter is required.
     run: "<YOUR_COMMAND>"
 
     # [REQUIRED]
