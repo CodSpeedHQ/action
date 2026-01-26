@@ -166,42 +166,42 @@ runs:
           fi
         fi
 
-        # Get the runner arguments
-        RUNNER_ARGS=""
+        # Build the runner arguments array
+        RUNNER_ARGS=()
         if [ -n "${{ inputs.token }}" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS --token ${{ inputs.token }}"
+          RUNNER_ARGS+=(--token "${{ inputs.token }}")
         fi
         if [ -n "${{ inputs.working-directory }}" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS --working-directory=${{ inputs.working-directory }}"
+          RUNNER_ARGS+=(--working-directory="${{ inputs.working-directory }}")
         fi
         if [ -n "${{ inputs.upload-url }}" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS --upload-url=${{ inputs.upload-url }}"
+          RUNNER_ARGS+=(--upload-url="${{ inputs.upload-url }}")
         fi
         if [ -n "${{ inputs.mode }}" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS --mode=${{ inputs.mode }}"
+          RUNNER_ARGS+=(--mode="${{ inputs.mode }}")
         fi
         if [ -n "${{ inputs.instruments }}" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS --instruments=${{ inputs.instruments }}"
+          RUNNER_ARGS+=(--instruments="${{ inputs.instruments }}")
         fi
         if [ -n "${{ inputs.mongo-uri-env-name }}" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS --mongo-uri-env-name=${{ inputs.mongo-uri-env-name }}"
+          RUNNER_ARGS+=(--mongo-uri-env-name="${{ inputs.mongo-uri-env-name }}")
         fi
         if [ "${{ inputs.cache-instruments }}" = "true" ] && [ -n "${{ inputs.instruments-cache-dir }}" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS --setup-cache-dir=${{ inputs.instruments-cache-dir }}"
+          RUNNER_ARGS+=(--setup-cache-dir="${{ inputs.instruments-cache-dir }}")
         fi
         if [ "${{ inputs.allow-empty }}" = "true" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS --allow-empty"
+          RUNNER_ARGS+=(--allow-empty)
         fi
         if [ -n "${{ inputs.go-runner-version }}" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS --go-runner-version=${{ inputs.go-runner-version }}"
+          RUNNER_ARGS+=(--go-runner-version="${{ inputs.go-runner-version }}")
         fi
         if [ -n "${{ inputs.config }}" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS --config=${{ inputs.config }}"
+          RUNNER_ARGS+=(--config="${{ inputs.config }}")
         fi
 
         if [ -n "$CODSPEED_INPUT_RUN" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS -- $CODSPEED_INPUT_RUN"
+          RUNNER_ARGS+=(-- "$CODSPEED_INPUT_RUN")
         fi
 
         # Run the benchmarks
-        codspeed run $RUNNER_ARGS
+        codspeed run "${RUNNER_ARGS[@]}"
