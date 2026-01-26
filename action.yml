@@ -199,9 +199,9 @@ runs:
           RUNNER_ARGS="$RUNNER_ARGS --config=${{ inputs.config }}"
         fi
 
-        # Run the benchmarks
         if [ -n "$CODSPEED_INPUT_RUN" ]; then
-          codspeed run $RUNNER_ARGS -- "$CODSPEED_INPUT_RUN"
-        else
-          codspeed run $RUNNER_ARGS
+          RUNNER_ARGS="$RUNNER_ARGS -- $CODSPEED_INPUT_RUN"
         fi
+
+        # Run the benchmarks
+        codspeed run $RUNNER_ARGS
