@@ -8,7 +8,7 @@ author: "Arthur Pastel"
 inputs:
   run:
     description: "The command to run the benchmarks"
-    required: true
+    required: false
 
   mode:
     description: |
@@ -107,6 +107,8 @@ runs:
       env:
         GH_MATRIX: "${{ toJson(matrix) }}"
         GH_STRATEGY: "${{ toJson(strategy) }}"
+        # This is needed to properly handle quotes and multiline commands in the 'run' input properly, rather than doing `RUN_INPUT_RUN=${{ inputs.run }}` in the script
+        CODSPEED_INPUT_RUN: ${{ inputs.run }}
       run: |
         # Validate required inputs
         # (custom message for smoother v4 migration)
@@ -191,4 +193,8 @@ runs:
         fi
 
         # Run the benchmarks
-        codspeed run $RUNNER_ARGS -- '${{ inputs.run }}'
+        if [ -n "$CODSPEED_INPUT_RUN" ]; then
+          codspeed run $RUNNER_ARGS -- "$CODSPEED_INPUT_RUN"
+        else
+          codspeed run $RUNNER_ARGS
+        fi
