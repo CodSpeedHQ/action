@@ -50,6 +50,8 @@ jobs:
             if [ "$output" != "Hello" ]; then
               echo "Assertion failed: Expected 'Hello' but got '$output'"
               exit 1
+            else
+              echo "Environment variable check passed with $output."
             fi
       - name: Check action in a custom directory
         uses: ./
