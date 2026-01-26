@@ -200,7 +200,7 @@ runs:
         fi
 
         if [ -n "$CODSPEED_INPUT_RUN" ]; then
-          RUNNER_ARGS="$RUNNER_ARGS -- '$CODSPEED_INPUT_RUN'"
+          RUNNER_ARGS="$RUNNER_ARGS -- \"$CODSPEED_INPUT_RUN\""
         fi
 
         # Run the benchmarks
