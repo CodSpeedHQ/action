@@ -146,7 +146,7 @@ runs:
 
         # Install the runner
         if [ "$VERSION_TYPE" = "latest" ]; then
-          curl -fsSL http://github.com/CodSpeedHQ/codspeed/releases/latest/download/codspeed-runner-installer.sh | bash -s -- --quiet
+          curl -fsSL https://codspeed.io/install.sh | bash -s -- --quiet
         elif [ "$VERSION_TYPE" = "branch" ]; then
           # Install from specific branch using cargo
           source $HOME/.cargo/env
@@ -157,13 +157,12 @@ runs:
           cargo install --locked --git https://github.com/CodSpeedHQ/codspeed --rev "$RUNNER_VERSION" codspeed-runner
         else
           # Release version
-          head_status=$(curl -I -fsSL -w "%{http_code}" -o /dev/null https://github.com/CodSpeedHQ/codspeed/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh)
-          if [ "$head_status" -eq 404 ]; then
-            echo "Error: Version $RUNNER_VERSION is not available in https://github.com/CodSpeedHQ/codspeed/releases, please a correct version."
+          if ! install_script=$(curl -sSL --fail-with-body https://codspeed.io/v$RUNNER_VERSION/install.sh 2>/dev/null); then
+            error_msg=$(echo "$install_script" | jq -r '.error // empty' 2>/dev/null)
+            echo "::error title=Failed to install CodSpeed CLI::Installation of CodSpeed CLI with version $RUNNER_VERSION failed.%0AReason: ${error_msg:-$install_script}"
             exit 1
-          else
-            curl -fsSL https://github.com/CodSpeedHQ/codspeed/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh | bash -s -- --quiet
           fi
+          echo "$install_script" | bash -s -- --quiet
         fi
 
         # Build the runner arguments array
