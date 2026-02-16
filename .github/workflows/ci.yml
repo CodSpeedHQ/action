@@ -114,6 +114,41 @@ jobs:
           mode: walltime
           run: echo "Testing version format ${{ matrix.version }}!"
 
+  get-recent-pinned-runner-versions:
+    runs-on: ubuntu-slim
+    outputs:
+      versions: ${{ steps.get-versions.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: get-versions
+        run: echo "versions=$(jq -c 'keys_unsorted | .[-5:]' .codspeed-runner-installer-hashes.json)" >> "$GITHUB_OUTPUT"
+
+  test-recent-pinned-runner-versions:
+    needs: get-recent-pinned-runner-versions
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ fromJson(needs.get-recent-pinned-runner-versions.outputs.versions) }}
+    runs-on: ubuntu-latest
+    env:
+      CODSPEED_SKIP_UPLOAD: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check action with pinned runner version ${{ matrix.version }}
+        uses: ./
+        with:
+          allow-empty: true
+          runner-version: ${{ matrix.version }}
+          mode: walltime # simulation not yet supported for all versions (was instrumentation before)
+          run: echo "Testing pinned version ${{ matrix.version }}!"
+
+  check-installer-hashes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify pinned installer hashes
+        run: ./scripts/check-hashes.sh
+
   test-config-file:
     runs-on: ubuntu-latest
     env:

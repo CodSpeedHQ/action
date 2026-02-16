@@ -33,13 +33,26 @@ jobs:
             exit 1
           fi
 
+          VERSION="${{ github.event.inputs.version }}"
+
+          # Fetch the installer hash from the GitHub API
+          INSTALLER_HASH=$(gh api "repos/CodSpeedHQ/codspeed/releases/tags/v${VERSION}" --jq '.assets[] | select(.name == "codspeed-runner-installer.sh") | .digest | ltrimstr("sha256:")')
+          if [ -z "$INSTALLER_HASH" ]; then
+            echo "Error: Could not fetch installer hash for version $VERSION"
+            exit 1
+          fi
+          echo "Installer hash for $VERSION: $INSTALLER_HASH"
+
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          echo "Bumping runner version to ${{ github.event.inputs.version }}"
-          BRANCH_NAME=bump-runner-version/${{ github.event.inputs.version }}
+          echo "Bumping runner version to $VERSION"
+          BRANCH_NAME=bump-runner-version/$VERSION
           git checkout -b $BRANCH_NAME
-          echo ${{ github.event.inputs.version }} > .codspeed-runner-version
-          git add .codspeed-runner-version
-          git commit -m "chore: bump runner version to ${{ github.event.inputs.version }}"
+
+          echo $VERSION > .codspeed-runner-version
+          jq --arg v "$VERSION" --arg h "$INSTALLER_HASH" '. + {($v): $h}' .codspeed-runner-installer-hashes.json > .codspeed-runner-installer-hashes.json.tmp && mv .codspeed-runner-installer-hashes.json.tmp .codspeed-runner-installer-hashes.json
+
+          git add .codspeed-runner-version .codspeed-runner-installer-hashes.json
+          git commit -m "chore: bump runner version to $VERSION"
           git push origin $BRANCH_NAME
-          gh pr create --title "chore: bump runner version to ${{ github.event.inputs.version }}" --body "Bump runner version to ${{ github.event.inputs.version }}" --base main --head $BRANCH_NAME
+          gh pr create --title "chore: bump runner version to $VERSION" --body "Bump runner version to $VERSION" --base main --head $BRANCH_NAME
