@@ -81,6 +81,11 @@ inputs:
     description: "Path to a CodSpeed configuration file (codspeed.yml). If not specified, the runner will look for a codspeed.yml file in the repository root."
     required: false
 
+  skip-hash-check-warning:
+    description: "Suppress the warning emitted when hash verification is not available (e.g. when using 'latest', branch, or revision versions)."
+    required: false
+    default: "false"
+
 runs:
   using: "composite"
   steps:
@@ -145,24 +150,55 @@ runs:
         fi
 
         # Install the runner
+        SKIP_HASH_CHECK_WARNING_WARNING="${{ inputs.skip-hash-check-warning }}"
+
         if [ "$VERSION_TYPE" = "latest" ]; then
+          if [ "$SKIP_HASH_CHECK_WARNING" != "true" ]; then
+            echo "::warning::Hash verification is not available when using 'latest' version. Consider pinning a specific version for supply chain security."
+          fi
           curl -fsSL https://codspeed.io/install.sh | bash -s -- --quiet
         elif [ "$VERSION_TYPE" = "branch" ]; then
           # Install from specific branch using cargo
+          if [ "$SKIP_HASH_CHECK_WARNING" != "true" ]; then
+            echo "::warning::Hash verification is not available when installing from a branch."
+          fi
           source $HOME/.cargo/env
           cargo install --locked --git https://github.com/CodSpeedHQ/codspeed --branch "$RUNNER_VERSION" codspeed-runner
         elif [ "$VERSION_TYPE" = "rev" ]; then
           # Install from specific commit/rev using cargo
+          if [ "$SKIP_HASH_CHECK_WARNING" != "true" ]; then
+            echo "::warning::Hash verification is not available when installing from a revision."
+          fi
           source $HOME/.cargo/env
           cargo install --locked --git https://github.com/CodSpeedHQ/codspeed --rev "$RUNNER_VERSION" codspeed-runner
         else
-          # Release version
-          if ! install_script=$(curl -sSL --fail-with-body https://codspeed.io/v$RUNNER_VERSION/install.sh 2>/dev/null); then
-            error_msg=$(echo "$install_script" | jq -r '.error // empty' 2>/dev/null)
-            echo "::error title=Failed to install CodSpeed CLI::Installation of CodSpeed CLI with version $RUNNER_VERSION failed.%0AReason: ${error_msg:-$install_script}"
+          # Release version - download to temp file and verify hash
+          INSTALLER_URL="https://codspeed.io/v$RUNNER_VERSION/install.sh"
+          INSTALLER_TMP=$(mktemp)
+          trap "rm -f $INSTALLER_TMP" EXIT
+
+          if ! curl -sSL --fail-with-body "$INSTALLER_URL" -o "$INSTALLER_TMP" 2>/dev/null; then
+            error_msg=$(jq -r '.error // empty' "$INSTALLER_TMP" 2>/dev/null)
+            install_output=$(cat "$INSTALLER_TMP")
+            echo "::error title=Failed to install CodSpeed CLI::Installation of CodSpeed CLI with version $RUNNER_VERSION failed.%0AReason: ${error_msg:-$install_output}"
             exit 1
           fi
-          echo "$install_script" | bash -s -- --quiet
+
+          HASHES_FILE="$GITHUB_ACTION_PATH/.codspeed-runner-installer-hashes.json"
+          EXPECTED_HASH=$(jq -r --arg v "$RUNNER_VERSION" '.[$v] // empty' "$HASHES_FILE")
+          if [ -z "$EXPECTED_HASH" ]; then
+            echo "::error::No pinned hash found for installer version $RUNNER_VERSION. Update .codspeed-runner-installer-hashes.json."
+            exit 1
+          fi
+
+          ACTUAL_HASH=$(sha256sum "$INSTALLER_TMP" | awk '{print $1}')
+          if [ "$ACTUAL_HASH" != "$EXPECTED_HASH" ]; then
+            echo "::error::Installer hash mismatch for version $RUNNER_VERSION. Expected: $EXPECTED_HASH, Got: $ACTUAL_HASH"
+            exit 1
+          fi
+          echo "Installer hash verified for version $RUNNER_VERSION"
+
+          bash "$INSTALLER_TMP" --quiet
         fi
 
         # Build the runner arguments array
