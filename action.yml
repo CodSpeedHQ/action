@@ -172,33 +172,14 @@ runs:
           source $HOME/.cargo/env
           cargo install --locked --git https://github.com/CodSpeedHQ/codspeed --rev "$RUNNER_VERSION" codspeed-runner
         else
-          # Release version - download to temp file and verify hash
-          INSTALLER_URL="https://codspeed.io/v$RUNNER_VERSION/install.sh"
-          INSTALLER_TMP=$(mktemp)
-          trap "rm -f $INSTALLER_TMP" EXIT
-
-          if ! curl -sSL --fail-with-body "$INSTALLER_URL" -o "$INSTALLER_TMP" 2>/dev/null; then
-            error_msg=$(jq -r '.error // empty' "$INSTALLER_TMP" 2>/dev/null)
-            install_output=$(cat "$INSTALLER_TMP")
-            echo "::error title=Failed to install CodSpeed CLI::Installation of CodSpeed CLI with version $RUNNER_VERSION failed.%0AReason: ${error_msg:-$install_output}"
+          # Release version
+          head_status=$(curl -I -fsSL -w "%{http_code}" -o /dev/null https://github.com/CodSpeedHQ/codspeed/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh)
+          if [ "$head_status" -eq 404 ]; then
+            echo "Error: Version $RUNNER_VERSION is not available in https://github.com/CodSpeedHQ/codspeed/releases, please a correct version."
             exit 1
+          else
+            curl -fsSL https://github.com/CodSpeedHQ/codspeed/releases/download/v$RUNNER_VERSION/codspeed-runner-installer.sh | bash -s -- --quiet
           fi
-
-          HASHES_FILE="$GITHUB_ACTION_PATH/.codspeed-runner-installer-hashes.json"
-          EXPECTED_HASH=$(jq -r --arg v "$RUNNER_VERSION" '.[$v] // empty' "$HASHES_FILE")
-          if [ -z "$EXPECTED_HASH" ]; then
-            echo "::error::No pinned hash found for installer version $RUNNER_VERSION. Update .codspeed-runner-installer-hashes.json."
-            exit 1
-          fi
-
-          ACTUAL_HASH=$(sha256sum "$INSTALLER_TMP" | awk '{print $1}')
-          if [ "$ACTUAL_HASH" != "$EXPECTED_HASH" ]; then
-            echo "::error::Installer hash mismatch for version $RUNNER_VERSION. Expected: $EXPECTED_HASH, Got: $ACTUAL_HASH"
-            exit 1
-          fi
-          echo "Installer hash verified for version $RUNNER_VERSION"
-
-          bash "$INSTALLER_TMP" --quiet
         fi
 
         # Build the runner arguments array
