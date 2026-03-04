@@ -143,26 +143,13 @@ runs:
           const version = process.env.RUNNER_VERSION
           core.setOutput('hash', hashes[version] || '')
 
-    - shell: bash
-      env:
-        GH_MATRIX: "${{ toJson(matrix) }}"
-        GH_STRATEGY: "${{ toJson(strategy) }}"
-        # This is needed to properly handle quotes and multiline commands in the 'run' input properly, rather than doing `RUN_INPUT_RUN=${{ inputs.run }}` in the script
-        CODSPEED_INPUT_RUN: ${{ inputs.run }}
+    - name: Install CodSpeed runner
+      shell: bash
       run: |
-        # Validate required inputs
-        # (custom message for smoother v4 migration)
-        if [ -z "${{ inputs.mode }}" ]; then
-          echo "::error title=Missing required input 'mode'::The 'mode' input is required as of CodSpeed Action v4. Please explicitly set 'mode' to 'simulation' or 'walltime'. Before, this variable was automatically set to instrumentation on every runner except for CodSpeed macro runners where it was set to walltime by default. See https://codspeed.io/docs/instruments for details."
-          exit 1
-        fi
-
-        # Configure and run codspeed-runner
         RUNNER_VERSION="${{ steps.versions.outputs.runner-version }}"
         VERSION_TYPE="${{ steps.versions.outputs.version-type }}"
 
-        # Install the runner
-        SKIP_HASH_CHECK_WARNING_WARNING="${{ inputs.skip-hash-check-warning }}"
+        SKIP_HASH_CHECK_WARNING="${{ inputs.skip-hash-check-warning }}"
 
         if [ "$VERSION_TYPE" = "latest" ]; then
           if [ "$SKIP_HASH_CHECK_WARNING" != "true" ]; then
@@ -214,6 +201,21 @@ runs:
           echo "Installer hash verified for version $RUNNER_VERSION"
 
           bash "$INSTALLER_TMP" --quiet
+        fi
+
+    - name: Run the benchmarks
+      shell: bash
+      env:
+        GH_MATRIX: "${{ toJson(matrix) }}"
+        GH_STRATEGY: "${{ toJson(strategy) }}"
+        # This is needed to properly handle quotes and multiline commands in the 'run' input properly, rather than doing `RUN_INPUT_RUN=${{ inputs.run }}` in the script
+        CODSPEED_INPUT_RUN: ${{ inputs.run }}
+      run: |
+        # Validate required inputs
+        # (custom message for smoother v4 migration)
+        if [ -z "${{ inputs.mode }}" ]; then
+          echo "::error title=Missing required input 'mode'::The 'mode' input is required as of CodSpeed Action v4. Please explicitly set 'mode' to 'simulation' or 'walltime'. Before, this variable was automatically set to instrumentation on every runner except for CodSpeed macro runners where it was set to walltime by default. See https://codspeed.io/docs/instruments for details."
+          exit 1
         fi
 
         # Build the runner arguments array
