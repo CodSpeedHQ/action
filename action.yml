@@ -12,7 +12,8 @@ inputs:
 
   mode:
     description: |
-      The mode to run the benchmarks in. The following modes are available:
+      The mode(s) to run the benchmarks in. Accepts a single value or a comma-separated list (e.g., "simulation,walltime").
+      The following modes are available:
       - `simulation`: Run the benchmarks with CPU simulation measurements.
       - `walltime`: Run the benchmarks with walltime measurement.
       - `memory`: Run the benchmarks with allocation measurements.

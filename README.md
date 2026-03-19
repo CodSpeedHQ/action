@@ -23,7 +23,8 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     run: "<YOUR_COMMAND>"
 
     # [REQUIRED]
-    # The measurement mode to use: "simulation" (recommended), or "walltime".
+    # The measurement mode(s) to use. Possible values: "simulation" (recommended), "walltime".
+    # Accepts a single value or a comma-separated list (e.g., "simulation,walltime").
     # More details on the instruments at https://docs.codspeed.io/instruments/
     mode: "simulation"
 

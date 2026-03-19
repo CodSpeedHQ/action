@@ -26,6 +26,7 @@ jobs:
           - simulation
           - instrumentation
           - walltime
+          - simulation,memory
 
     runs-on: ${{ matrix.os }}
     env:
