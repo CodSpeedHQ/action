@@ -124,14 +124,18 @@ runs:
         KERNEL_VERSION=$(uname -r)
         echo "kernel-version=$KERNEL_VERSION" >> $GITHUB_OUTPUT
 
+        # Normalize mode for cache key (commas are not allowed in cache keys)
+        MODE_CACHE_KEY=$(echo "${{ inputs.mode }}" | tr ',' '-')
+        echo "mode-cache-key=$MODE_CACHE_KEY" >> $GITHUB_OUTPUT
+
     - name: Cache CodSpeed instruments
       if: inputs.cache-instruments == 'true'
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
         path: ${{ inputs.instruments-cache-dir }}
-        key: codspeed-instruments-${{ inputs.mode }}-${{ runner.os }}-${{ runner.arch }}-${{steps.versions.outputs.kernel-version }}-${{ steps.versions.outputs.runner-version }}
+        key: codspeed-instruments-${{ steps.versions.outputs.mode-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{ steps.versions.outputs.kernel-version }}-${{ steps.versions.outputs.runner-version }}
         restore-keys: |
-          codspeed-instruments-${{ inputs.mode }}-${{ runner.os }}-${{ runner.arch }}-${{steps.versions.outputs.kernel-version }}-
+          codspeed-instruments-${{ steps.versions.outputs.mode-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{ steps.versions.outputs.kernel-version }}-
 
     - name: Lookup installer hash
       id: installer-hash
