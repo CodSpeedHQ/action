@@ -35,6 +35,12 @@ if ! [[ "$NEW_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
 fi
 MAJOR_VERSION=$(echo "$NEW_VERSION" | cut -d. -f1)
 
+# Check if this version has already been released (local tag, remote tag, or GitHub release)
+if git tag -l "v$NEW_VERSION" | grep -q . || git ls-remote --tags origin "refs/tags/v$NEW_VERSION" | grep -q . || gh release view "v$NEW_VERSION" > /dev/null 2>&1; then
+  echo "Error: v$NEW_VERSION has already been released."
+  exit 1
+fi
+
 # Determine release notes strategy
 RUNNER_NOTES=$(gh release view "v$NEW_VERSION" -R CodSpeedHQ/codspeed --json body | jq -r .body)
 RELEASE_NOTES="$RUNNER_NOTES
