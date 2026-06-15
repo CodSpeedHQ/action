@@ -104,6 +104,8 @@ runs:
         # Detect version type (priority: latest > version number > branch/rev prefixes)
         if [ "$RUNNER_VERSION" = "latest" ]; then
           VERSION_TYPE="latest"
+        elif echo "$RUNNER_VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+-'; then
+          VERSION_TYPE="prerelease"
         elif echo "$RUNNER_VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+'; then
           VERSION_TYPE="release"
         elif echo "$RUNNER_VERSION" | grep -q '^branch:'; then
@@ -161,6 +163,12 @@ runs:
             echo "::warning::Hash verification is not available when using 'latest' version. Consider pinning a specific version for supply chain security."
           fi
           curl -fsSL https://codspeed.io/install.sh | bash -s -- --quiet
+        elif [ "$VERSION_TYPE" = "prerelease" ]; then
+          # Prereleases are not pinned, so install from the versioned installer without hash verification.
+          if [ "$SKIP_HASH_CHECK_WARNING" != "true" ]; then
+            echo "::warning::Hash verification is not available for prerelease version $RUNNER_VERSION."
+          fi
+          curl -fsSL "https://codspeed.io/v$RUNNER_VERSION/install.sh" | bash -s -- --quiet
         elif [ "$VERSION_TYPE" = "branch" ]; then
           # Install from specific branch using cargo
           if [ "$SKIP_HASH_CHECK_WARNING" != "true" ]; then
