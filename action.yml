@@ -106,6 +106,9 @@ runs:
           VERSION_TYPE="latest"
         elif echo "$RUNNER_VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+-'; then
           VERSION_TYPE="prerelease"
+        elif echo "$RUNNER_VERSION" | grep -q '^unpinned:'; then
+          VERSION_TYPE="prerelease"
+          RUNNER_VERSION=$(echo "$RUNNER_VERSION" | sed 's/^unpinned://')
         elif echo "$RUNNER_VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+'; then
           VERSION_TYPE="release"
         elif echo "$RUNNER_VERSION" | grep -q '^branch:'; then
