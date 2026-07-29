@@ -78,6 +78,19 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     # [OPTIONAL]
     # The version of the go-runner to use (e.g., 1.0.0, 1.0.0-beta.1). If not specified, the latest version will be installed
     go-runner-version: ""
+
+    # [OPTIONAL]
+    # Improve `simulation` accuracy by weighting each instruction by its estimated cycle
+    # cost instead of charging every instruction the same fixed cost.
+    # Set to "false" to disable. Requires runner v5 or later.
+    # Defaults to "true".
+    cycle-estimation: ""
+
+    # [OPTIONAL]
+    # Exclude memory allocation time from `simulation` mode results. Set to "true" to
+    # enable. Requires runner v5 or later.
+    # Defaults to "false".
+    exclude-allocations: ""
 ```
 
 # Example usage

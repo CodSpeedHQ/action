@@ -162,3 +162,18 @@ jobs:
         with:
           mode: memory
           config: .github/test-codspeed.yml
+
+  test-simulation-tuning-inputs:
+    runs-on: ubuntu-latest
+    env:
+      CODSPEED_SKIP_UPLOAD: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check action with cycle-estimation and exclude-allocations
+        uses: ./
+        with:
+          allow-empty: true
+          mode: simulation
+          cycle-estimation: "false"
+          exclude-allocations: "true"
+          run: echo "Testing simulation tuning inputs!"

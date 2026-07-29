@@ -78,6 +78,19 @@ inputs:
     description: "The version of the go-runner to use (e.g., 1.0.0, 1.0.0-beta.1). If not specified, the latest version will be installed"
     required: false
 
+  cycle-estimation:
+    description: |
+      Improve `simulation` accuracy by weighting each instruction by its estimated cycle cost instead of
+      charging every instruction the same fixed cost. Set to 'false' to disable.
+      Requires runner v5 or later. Defaults to 'true'.
+    required: false
+
+  exclude-allocations:
+    description: |
+      Exclude memory allocation time from `simulation` mode results. Set to 'true' to enable.
+      Requires runner v5 or later. Defaults to 'false'.
+    required: false
+
   config:
     description: "Path to a CodSpeed configuration file (codspeed.yml). If not specified, the runner will look for a codspeed.yml file in the repository root."
     required: false
@@ -262,6 +275,12 @@ runs:
         fi
         if [ -n "${{ inputs.config }}" ]; then
           RUNNER_ARGS+=(--config="${{ inputs.config }}")
+        fi
+        if [ -n "${{ inputs.cycle-estimation }}" ]; then
+          RUNNER_ARGS+=(--cycle-estimation="${{ inputs.cycle-estimation }}")
+        fi
+        if [ -n "${{ inputs.exclude-allocations }}" ]; then
+          RUNNER_ARGS+=(--exclude-allocations="${{ inputs.exclude-allocations }}")
         fi
 
         if [ -n "$CODSPEED_INPUT_RUN" ]; then
