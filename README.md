@@ -12,7 +12,7 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
 # Usage
 
 ```yaml
-- uses: CodSpeedHQ/action@v4
+- uses: CodSpeedHQ/action@v5
   with:
     # [OPTIONAL]
     # The command used to run your CodSpeed benchmarks
@@ -117,7 +117,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v4
+        uses: CodSpeedHQ/action@v5
         with:
           mode: simulation
           run: pytest tests/ --codspeed
@@ -162,7 +162,7 @@ jobs:
         run: cargo codspeed build
 
       - name: Run the benchmarks
-        uses: CodSpeedHQ/action@v4
+        uses: CodSpeedHQ/action@v5
         with:
           mode: simulation
           run: cargo codspeed run
@@ -202,7 +202,7 @@ jobs:
         run: npm install
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v4
+        uses: CodSpeedHQ/action@v5
         with:
           mode: simulation
           run: npx vitest bench

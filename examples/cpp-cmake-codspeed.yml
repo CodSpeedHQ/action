@@ -27,7 +27,7 @@ jobs:
           make -j
 
       - name: Run C++ benchmarks
-        uses: CodSpeedHQ/action@v4
+        uses: CodSpeedHQ/action@v5
         with:
           mode: simulation
           run: ./path/to/built/benchmark

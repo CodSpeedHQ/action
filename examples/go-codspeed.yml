@@ -26,7 +26,7 @@ jobs:
           go-version: stable
 
       - name: Run Go benchmarks
-        uses: CodSpeedHQ/action@main
+        uses: CodSpeedHQ/action@v5
         with:
           mode: walltime # go only supports walltime mode
           run: go test -bench=. -benchtime=5s
