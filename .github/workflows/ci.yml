@@ -172,11 +172,12 @@ jobs:
       CODSPEED_SKIP_UPLOAD: true
     steps:
       - uses: actions/checkout@v4
-      - name: Check action with cycle-estimation and exclude-allocations
+      - name: Check action with cycle-estimation, exclude-allocations and simulation-track-subprocess
         uses: ./
         with:
           allow-empty: true
           mode: simulation
           cycle-estimation: "false"
           exclude-allocations: "true"
+          simulation-track-subprocess: "true"
           run: echo "Testing simulation tuning inputs!"
