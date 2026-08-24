@@ -91,6 +91,12 @@ inputs:
       Requires runner v5 or later. Defaults to 'false'.
     required: false
 
+  simulation-track-subprocess:
+    description: |
+      Measure the subprocesses spawned by the benchmarked process in `simulation` mode. Set to 'true' to enable.
+      Requires runner v5.2.0 or later. Defaults to 'false'.
+    required: false
+
   config:
     description: "Path to a CodSpeed configuration file (codspeed.yml). If not specified, the runner will look for a codspeed.yml file in the repository root."
     required: false
@@ -291,6 +297,9 @@ runs:
         fi
         if [ -n "${{ inputs.exclude-allocations }}" ]; then
           RUNNER_ARGS+=(--exclude-allocations="${{ inputs.exclude-allocations }}")
+        fi
+        if [ "${{ inputs.simulation-track-subprocess }}" = "true" ]; then
+          RUNNER_ARGS+=(--simulation-track-subprocess)
         fi
 
         if [ -n "$CODSPEED_INPUT_RUN" ]; then

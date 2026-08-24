@@ -91,6 +91,12 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     # enable. Requires runner v5 or later.
     # Defaults to "false".
     exclude-allocations: ""
+
+    # [OPTIONAL]
+    # Measure the subprocesses spawned by the benchmarked process in `simulation` mode.
+    # Set to "true" to enable. Requires runner v5.2.0 or later.
+    # Defaults to "false".
+    simulation-track-subprocess: ""
 ```
 
 # Example usage
