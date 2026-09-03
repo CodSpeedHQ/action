@@ -74,6 +74,16 @@ inputs:
     required: false
     default: "false"
 
+  allow-upload-failure:
+    description: |
+      Allow the action to complete successfully even if the benchmark results could not be uploaded to
+      CodSpeed, because of an authentication or an upload error.
+      This is useful for workflows triggered from forks. Failures of the benchmarks themselves still fail the action.
+      Requires a runner version that reports dedicated exit codes for these failures; with older runners,
+      the action fails as usual. Defaults to 'false'.
+    required: false
+    default: "false"
+
   go-runner-version:
     description: "The version of the go-runner to use (e.g., 1.0.0, 1.0.0-beta.1). If not specified, the latest version will be installed"
     required: false
@@ -307,4 +317,23 @@ runs:
         fi
 
         # Run the benchmarks
+        set +e
         codspeed run "${RUNNER_ARGS[@]}"
+        EXIT_CODE=$?
+        set -e
+
+        # The runner exits with 4 for auth errors and 5 for other upload errors.
+        if [ "${{ inputs.allow-upload-failure }}" = "true" ]; then
+          case "$EXIT_CODE" in
+            4)
+              echo "::warning title=CodSpeed results not uploaded::Could not authenticate against CodSpeed, so the benchmark results were not uploaded. Continuing because 'allow-upload-failure' is enabled."
+              exit 0
+              ;;
+            5)
+              echo "::warning title=CodSpeed results not uploaded::The benchmarks ran, but their results could not be uploaded to CodSpeed. Continuing because 'allow-upload-failure' is enabled."
+              exit 0
+              ;;
+          esac
+        fi
+
+        exit $EXIT_CODE

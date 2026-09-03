@@ -97,6 +97,13 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     # Set to "true" to enable. Requires runner v5.2.0 or later.
     # Defaults to "false".
     simulation-track-subprocess: ""
+
+    # [OPTIONAL]
+    # Allow the action to complete successfully even if the benchmark results could not be
+    # uploaded to CodSpeed, for instance because a workflow triggered from a fork cannot
+    # access the CodSpeed token. Failures of the benchmarks themselves still fail the
+    # action. Set to "true" to enable. Defaults to "false".
+    allow-upload-failure: "false"
 ```
 
 # Example usage
