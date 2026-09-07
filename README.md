@@ -97,6 +97,12 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     # Set to "true" to enable. Requires runner v5.2.0 or later.
     # Defaults to "false".
     simulation-track-subprocess: ""
+
+    # [OPTIONAL]
+    # [Experimental] Track physical (resident) memory in `memory` mode. Set to "true" to
+    # enable. Requires runner v5.3.0 or later.
+    # Defaults to "false".
+    experimental-memory-track-physical: ""
 ```
 
 # Example usage

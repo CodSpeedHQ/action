@@ -97,6 +97,12 @@ inputs:
       Requires runner v5.2.0 or later. Defaults to 'false'.
     required: false
 
+  experimental-memory-track-physical:
+    description: |
+      [Experimental] Track physical (resident) memory in `memory` mode. Set to 'true' to enable.
+      Requires runner v5.3.0 or later. Defaults to 'false'.
+    required: false
+
   config:
     description: "Path to a CodSpeed configuration file (codspeed.yml). If not specified, the runner will look for a codspeed.yml file in the repository root."
     required: false
@@ -300,6 +306,10 @@ runs:
         fi
         if [ "${{ inputs.simulation-track-subprocess }}" = "true" ]; then
           RUNNER_ARGS+=(--simulation-track-subprocess)
+        fi
+
+        if [ "${{ inputs.experimental-memory-track-physical }}" = "true" ]; then
+          RUNNER_ARGS+=(--experimental-memory-track-physical)
         fi
 
         if [ -n "$CODSPEED_INPUT_RUN" ]; then
