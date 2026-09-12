@@ -136,9 +136,11 @@ runs:
         elif echo "$RUNNER_VERSION" | grep -q '^branch:'; then
           VERSION_TYPE="branch"
           RUNNER_VERSION=$(echo "$RUNNER_VERSION" | sed 's/^branch://')
+          RUNNER_CACHE_VERSION=$(git ls-remote --exit-code https://github.com/CodSpeedHQ/codspeed "refs/heads/$RUNNER_VERSION" | cut -f1)
         elif echo "$RUNNER_VERSION" | grep -q '^rev:'; then
           VERSION_TYPE="rev"
           RUNNER_VERSION=$(echo "$RUNNER_VERSION" | sed 's/^rev://')
+          RUNNER_CACHE_VERSION="$RUNNER_VERSION"
         else
           # Default to release version
           VERSION_TYPE="release"
@@ -146,6 +148,7 @@ runs:
 
         echo "runner-version=$RUNNER_VERSION" >> $GITHUB_OUTPUT
         echo "version-type=$VERSION_TYPE" >> $GITHUB_OUTPUT
+        echo "runner-cache-version=$RUNNER_CACHE_VERSION" >> $GITHUB_OUTPUT
 
         # Get kernel version for cache key
         KERNEL_VERSION=$(uname -r)
@@ -174,6 +177,14 @@ runs:
         restore-keys: |
           codspeed-instruments-${{ steps.versions.outputs.mode-cache-key }}-${{ steps.versions.outputs.distro }}-${{ runner.arch }}-${{ steps.versions.outputs.kernel-version }}-
 
+    - name: Cache CodSpeed runner
+      id: runner-cache
+      if: steps.versions.outputs.version-type == 'branch' || steps.versions.outputs.version-type == 'rev'
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      with:
+        path: ~/.cargo/bin/codspeed
+        key: codspeed-runner-${{ steps.versions.outputs.distro }}-${{ runner.arch }}-${{ steps.versions.outputs.runner-cache-version }}
+
     - name: Lookup installer hash
       id: installer-hash
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
@@ -190,6 +201,7 @@ runs:
       run: |
         RUNNER_VERSION="${{ steps.versions.outputs.runner-version }}"
         VERSION_TYPE="${{ steps.versions.outputs.version-type }}"
+        RUNNER_CACHE_VERSION="${{ steps.versions.outputs.runner-cache-version }}"
 
         SKIP_HASH_CHECK_WARNING="${{ inputs.skip-hash-check-warning }}"
 
@@ -205,19 +217,21 @@ runs:
           fi
           curl -fsSL "https://codspeed.io/v$RUNNER_VERSION/install.sh" | bash -s -- --quiet
         elif [ "$VERSION_TYPE" = "branch" ]; then
-          # Install from specific branch using cargo
           if [ "$SKIP_HASH_CHECK_WARNING" != "true" ]; then
             echo "::warning::Hash verification is not available when installing from a branch."
           fi
-          source $HOME/.cargo/env
-          cargo install --locked --git https://github.com/CodSpeedHQ/codspeed --branch "$RUNNER_VERSION" codspeed-runner
+          if [ "${{ steps.runner-cache.outputs.cache-hit }}" != "true" ]; then
+            source $HOME/.cargo/env
+            cargo install --locked --git https://github.com/CodSpeedHQ/codspeed --rev "$RUNNER_CACHE_VERSION" codspeed-runner
+          fi
         elif [ "$VERSION_TYPE" = "rev" ]; then
-          # Install from specific commit/rev using cargo
           if [ "$SKIP_HASH_CHECK_WARNING" != "true" ]; then
             echo "::warning::Hash verification is not available when installing from a revision."
           fi
-          source $HOME/.cargo/env
-          cargo install --locked --git https://github.com/CodSpeedHQ/codspeed --rev "$RUNNER_VERSION" codspeed-runner
+          if [ "${{ steps.runner-cache.outputs.cache-hit }}" != "true" ]; then
+            source $HOME/.cargo/env
+            cargo install --locked --git https://github.com/CodSpeedHQ/codspeed --rev "$RUNNER_VERSION" codspeed-runner
+          fi
         else
           # Release version - download to temp file and verify hash
           INSTALLER_URL="https://codspeed.io/v$RUNNER_VERSION/install.sh"
