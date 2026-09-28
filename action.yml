@@ -112,6 +112,13 @@ inputs:
     required: false
     default: "false"
 
+outputs:
+  run-id:
+    description: |
+      The id of the CodSpeed run the results were uploaded to.
+      Requires runner v5.4.0 or later.
+    value: ${{ steps.run-benchmarks.outputs.run-id }}
+
 runs:
   using: "composite"
   steps:
@@ -252,6 +259,7 @@ runs:
         fi
 
     - name: Run the benchmarks
+      id: run-benchmarks
       shell: bash
       env:
         GH_MATRIX: "${{ toJson(matrix) }}"

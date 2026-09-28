@@ -105,6 +105,17 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     experimental-memory-track-physical: ""
 ```
 
+The action exposes the id of the CodSpeed run as the `run-id` output (requires runner v5.4.0 or later):
+
+```yaml
+- uses: CodSpeedHQ/action@v5
+  id: codspeed
+  with:
+    mode: "simulation"
+    run: "<YOUR_COMMAND>"
+- run: echo "CodSpeed run ${{ steps.codspeed.outputs.run-id }}"
+```
+
 # Example usage
 
 ## Python with `pytest` and [`pytest-codspeed`](https://github.com/CodSpeedHQ/pytest-codspeed)
