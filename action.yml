@@ -266,8 +266,6 @@ runs:
         GH_STRATEGY: "${{ toJson(strategy) }}"
         # This is needed to properly handle quotes and multiline commands in the 'run' input properly, rather than doing `RUN_INPUT_RUN=${{ inputs.run }}` in the script
         CODSPEED_INPUT_RUN: ${{ inputs.run }}
-        # An env var rather than a flag, so that older runners ignore it
-        CODSPEED_EXPORT_RUN_ID: "true"
       run: |
         # Validate required inputs
         # (custom message for smoother v4 migration)
