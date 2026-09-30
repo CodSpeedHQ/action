@@ -97,10 +97,16 @@ inputs:
       Requires runner v5.2.0 or later. Defaults to 'false'.
     required: false
 
-  experimental-memory-track-physical:
+  disable-memory-track-physical:
     description: |
-      [Experimental] Track physical (resident) memory in `memory` mode. Set to 'true' to enable.
-      Requires runner v5.3.0 or later. Defaults to 'false'.
+      Disable physical (resident) memory tracking in `memory` mode. Set to 'true' to disable.
+      Requires runner v5.4.0 or later. Defaults to 'false' (tracking enabled).
+    required: false
+
+  disable-memory-capture-stack:
+    description: |
+      Disable allocation call stack capture in `memory` mode. Set to 'true' to disable.
+      Requires runner v5.4.0 or later. Defaults to 'false' (capture enabled).
     required: false
 
   config:
@@ -316,8 +322,11 @@ runs:
           RUNNER_ARGS+=(--simulation-track-subprocess)
         fi
 
-        if [ "${{ inputs.experimental-memory-track-physical }}" = "true" ]; then
-          RUNNER_ARGS+=(--experimental-memory-track-physical)
+        if [ "${{ inputs.disable-memory-track-physical }}" = "true" ]; then
+          RUNNER_ARGS+=(--disable-memory-track-physical)
+        fi
+        if [ "${{ inputs.disable-memory-capture-stack }}" = "true" ]; then
+          RUNNER_ARGS+=(--disable-memory-capture-stack)
         fi
 
         if [ -n "$CODSPEED_INPUT_RUN" ]; then
