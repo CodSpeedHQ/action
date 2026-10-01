@@ -105,6 +105,12 @@ GitHub Actions for running [CodSpeed](https://codspeed.io) in your CI.
     experimental-memory-track-physical: ""
 ```
 
+# Outputs
+
+| Name     | Description                                                                               |
+| -------- | ----------------------------------------------------------------------------------------- |
+| `run-id` | The id of the CodSpeed run the results were uploaded to. Requires runner v5.4.0 or later. |
+
 # Example usage
 
 ## Python with `pytest` and [`pytest-codspeed`](https://github.com/CodSpeedHQ/pytest-codspeed)
