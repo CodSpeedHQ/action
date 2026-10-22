@@ -16,12 +16,12 @@ permissions: # optional for public repositories
 jobs:
   codspeed:
     name: Run benchmarks
-    runs-on: codspeed-macro
+    runs-on: codspeed-macro-arm64-graviton-ubuntu-22-04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
           go-version: stable
 

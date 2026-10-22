@@ -1,0 +1,34 @@
+name: CodSpeed
+
+on:
+  push:
+    branches:
+      - "main" # or "master"
+  pull_request: # required to have reports on PRs
+  # `workflow_dispatch` allows CodSpeed to trigger backtest
+  # performance analysis in order to generate initial data.
+  workflow_dispatch:
+
+permissions: # optional for public repositories
+  contents: read
+  id-token: write # for OpenID Connect authentication with CodSpeed
+
+jobs:
+  codspeed:
+    name: Run benchmarks
+    runs-on: codspeed-macro-arm64-graviton-ubuntu-22-04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive # the CodSpeed JMH fork is a submodule
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Run Kotlin benchmarks
+        uses: CodSpeedHQ/action@v5
+        with:
+          mode: walltime # the JVM integration only supports walltime mode
+          run: ./gradlew jmh
