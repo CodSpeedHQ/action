@@ -145,10 +145,10 @@ jobs:
       contents: read
       id-token: write # for OpenID Connect authentication with CodSpeed
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v3
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
-          python-version: "3.9"
+          python-version: "3.13"
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -179,17 +179,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  name: Run benchmarks
   benchmarks:
+    name: Run benchmarks
     runs-on: ubuntu-latest
     permissions: # optional for public repositories
       contents: read
       id-token: write # for OpenID Connect authentication with CodSpeed
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup rust toolchain, cache and cargo-codspeed binary
-        uses: moonrepo/setup-rust@v0
+        uses: moonrepo/setup-rust@v1
         with:
           channel: stable
           cache-target: release
@@ -231,9 +231,9 @@ jobs:
       contents: read
       id-token: write # for OpenID Connect authentication with CodSpeed
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v7
 
       - name: Install dependencies
         run: npm install
